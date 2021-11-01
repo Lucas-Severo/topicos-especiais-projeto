@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/retratoes",
+      "handler": "retrato.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/retratoes/count",
+      "handler": "retrato.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/retratoes/:id",
+      "handler": "retrato.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/retratoes",
+      "handler": "retrato.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/retratoes/:id",
+      "handler": "retrato.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/retratoes/:id",
+      "handler": "retrato.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

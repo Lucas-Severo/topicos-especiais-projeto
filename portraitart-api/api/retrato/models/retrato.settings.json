@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "retrato",
+  "info": {
+    "name": "retrato",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "retrato_imagem": {
+      "collection": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "plugin": "upload",
+      "required": false,
+      "pluginOptions": {}
+    },
+    "usuario": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "retratos"
+    }
+  }
+}
