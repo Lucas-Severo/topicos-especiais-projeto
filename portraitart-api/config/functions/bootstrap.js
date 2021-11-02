@@ -42,20 +42,24 @@
     }
   
     const setDefaultPermissions = async () => {
-        const permissions = await strapi
+        const tabelas = Object.keys(permissionsByDatabase)
+        
+        for(let tabela of tabelas) {
+            const permissions = await strapi
             .query("permission", "users-permissions")
-            .find({ type: "application", role: publicRole.id, controller: 'retrato' });
+            .find({ type: "application", role: publicRole.id, controller: tabela });
 
-        await Promise.all(
-            permissions.map(p =>
-                strapi
-                .query("permission", "users-permissions")
-                .update({id: p.id}, { 
-                    enabled: true, 
-                    role: obterPapelPorPermissao(permissionsByDatabase[p.controller][p.action])
-                })
-            )
-        );
+            await Promise.all(
+                permissions.map(p =>
+                    strapi
+                    .query("permission", "users-permissions")
+                    .update({id: p.id}, { 
+                        enabled: true, 
+                        role: obterPapelPorPermissao(permissionsByDatabase[p.controller][p.action])
+                    })
+                )
+            );
+        }
   };
 
   const obterPapelPorPermissao = (permissao) => {
