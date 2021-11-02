@@ -15,6 +15,17 @@
     let publicRole = {}
     let authenticatedRole = {}
 
+    const permissionsUser = {
+        user: {
+            create: PUBLIC,
+            delete: AUTH,
+            count: PUBLIC,
+            find: PUBLIC,
+            findone: AUTH,
+            update: AUTH
+        }
+    }
+
     const permissionsByDatabase = {
         retrato: {
             create: AUTH,
@@ -40,8 +51,25 @@
             .findOne({ type: "authenticated" });
         return result;
     }
+
+    const setDefaultPermissionsUser = async () => {
+        const permissions = await strapi
+            .query("permission", "users-permissions")
+            .find({ type: "users-permissions", role: publicRole.id, controller: 'user' })
+    
+        await Promise.all(
+            permissions.map(p =>
+                strapi
+                .query("permission", "users-permissions")
+                .update({id: p.id}, { 
+                    enabled: true, 
+                    role: obterPapelPorPermissao(permissionsUser[p.controller][p.action])
+                })
+            )
+        );
+    }
   
-    const setDefaultPermissions = async () => {
+    const setDefaultPermissionsApplication = async () => {
         const tabelas = Object.keys(permissionsByDatabase)
         
         for(let tabela of tabelas) {
@@ -87,6 +115,7 @@ module.exports = async() => {
 
     const shouldSetDefaultPermissions = await isFirstRun();
     if (shouldSetDefaultPermissions) {
-        await setDefaultPermissions();
+        await setDefaultPermissionsUser();
+        await setDefaultPermissionsApplication();
     }
 };
