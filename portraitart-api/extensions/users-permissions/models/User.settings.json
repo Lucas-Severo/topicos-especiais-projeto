@@ -62,6 +62,11 @@
     "retratos": {
       "via": "usuario",
       "collection": "retrato"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "username",
+      "required": true
     }
   }
 }
