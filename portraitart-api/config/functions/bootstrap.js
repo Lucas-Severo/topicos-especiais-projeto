@@ -1,5 +1,7 @@
 'use strict';
 
+const pluralize = require('pluralize')
+
 /**
  * An asynchronous bootstrap function that runs before
  * your application gets started.
@@ -109,7 +111,12 @@
     return !initHasRun;
   };
 
+const definePluralization = () => {
+    pluralize.addPluralRule('retrato', 'retratos')
+}
+
 module.exports = async() => {
+    definePluralization()
     publicRole = await findPublicRole();
     authenticatedRole = await findAuthenticatedRole()
 
