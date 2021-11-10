@@ -1,0 +1,69 @@
+<template>
+    <v-container fill-height >
+        <v-row align="center" justify="center">
+            <v-col cols="4">
+                <h2 class="text-center">Realizar Cadastro</h2>
+                    <div class="mb-10">
+                        <v-text-field
+                            v-validate="'required|email'"
+                            v-model="email"
+                            :error-messages="errors.collect('email')"
+                            label="Email"
+                            name="email"/>
+                        <v-text-field
+                            v-validate="'required'"
+                            v-model="email"
+                            :error-messages="errors.collect('apelido')"
+                            label="Apelido"
+                            name="apelido"/>
+                        <v-text-field
+                            v-model="senha"
+                            class="mb-3"
+                            label="Senha"
+                            v-validate="'required'"
+                            name="password"
+                            :error-messages="errors.collect('password')"
+                            :type="showPassword ? 'text' : 'password'"
+                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            @click:append="showPassword = !showPassword"/>
+                        <v-btn
+                            color="primary"
+                            class="mr-4"
+                            @click="submit">
+                            Cadastrar
+                        </v-btn>
+                        <v-btn
+                            color="secondary"
+                            type="submit"
+                            @click="redirecionarTelaLogin">
+                            Login
+                        </v-btn>
+                        
+                    </div>
+            </v-col>
+        </v-row>
+    </v-container>
+</template>
+
+<script>
+
+export default {
+  name: 'Cadastro',
+  data: () => ({
+    showPassword: false,
+    email: '',
+    senha: '',
+    apelido: ''
+  }),
+  methods: {
+      async submit() {
+          const response = await this.$validator.validateAll()
+      },
+      async redirecionarTelaLogin() {
+          await this.$router.push({
+              name: 'Login'
+          })
+      }
+  }
+};
+</script>
