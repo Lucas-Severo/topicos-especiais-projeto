@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '../store'
+import ErroMessages from './ErroMessages';
 
 const instance = axios.create({
     baseURL: 'http://localhost:1337'
@@ -11,6 +12,24 @@ instance.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
+}, function (error) {
+    store.commit('mostrarAlerta')
+    store.commit('setMensagemAlerta', 'Erro ao realizar a requisição.')
+    return Promise.reject(error)
 })
+
+instance.interceptors.response.use((response) => {
+    return response;
+}, function (error) {
+    let erroId = error.response.data.message[0].messages[0].id
+    let mensagemErro = ErroMessages[erroId]
+    if(!mensagemErro) {
+        mensagemErro = {mensagem: 'Erro na aplicação.'}
+    }
+
+    store.commit('mostrarAlerta')
+    store.commit('setMensagemAlerta', mensagemErro.mensagem)
+    return Promise.reject(error);
+  })
 
 export default instance;

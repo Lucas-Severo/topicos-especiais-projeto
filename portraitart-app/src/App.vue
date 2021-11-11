@@ -32,6 +32,7 @@
     </v-app-bar>
 
     <v-main>
+      <Alerta/>
       <router-view/>
     </v-main>
   </v-app>
@@ -41,9 +42,13 @@
 import store from './store'
 import AutenticacaoApiRequest from './utils/AutenticacaoApiRequest'
 import UsuarioApiRequest from './utils/UsuarioApiRequest'
+import Alerta from './components/Alerta.vue'
 
 export default {
   name: 'App',
+  components: {
+    Alerta
+  },
   computed: {
     ehRotaLogin() {
       const rotasAutenticacao = ['Cadastro', 'Login']
