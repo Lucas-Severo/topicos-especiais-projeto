@@ -22,10 +22,13 @@ const pluralize = require('pluralize')
         user: {
             create: PUBLIC,
             delete: AUTH,
-            count: PUBLIC,
+            count: BOTH,
             find: PUBLIC,
-            findone: AUTH,
+            findone: BOTH,
             update: AUTH
+        },
+        auth: {
+            tokendecrypt: BOTH
         }
     }
 
@@ -54,51 +57,16 @@ const pluralize = require('pluralize')
             .findOne({ type: "authenticated" });
         return result;
     }
-
-    const setDefaultPermissionsUser = async () => {
-        const permissions = await strapi
-            .query("permission", "users-permissions")
-            .find({ type: "users-permissions", role: publicRole.id, controller: 'user' })
-    
-        await Promise.all(
-            permissions.map(p =>
-                strapi
-                .query("permission", "users-permissions")
-                .update({id: p.id}, { 
-                    enabled: true, 
-                    role: obterPapelPorPermissao(permissionsUser[p.controller][p.action])
-                })
-            )
-        );
-    }
   
-    const setDefaultPermissionsApplication = async () => {
-        const tabelas = Object.keys(permissionsByDatabase)
+    const setDefaultPermissionsApplication = async (objeto, type) => {
+        const tabelas = Object.keys(objeto)
         
         for(let tabela of tabelas) {
-            for (let action of Object.keys(permissionsByDatabase[tabela])) {
-                let enabledAuth = false
-                let enabledPublic = false
-
-                if(permissionsByDatabase[tabela][action] == PUBLIC) {
-                    enabledAuth = false
-                    enabledPublic = true
-                } else if (permissionsByDatabase[tabela][action] == AUTH) {
-                    enabledAuth = true
-                    enabledPublic = false
-                } else {
-                    enabledAuth = true
-                    enabledPublic = true
-                }
+            for (let action of Object.keys(objeto[tabela])) {
+                const [enabledPublic, enabledAuth] = obterPapelAcaoPorPermissao(objeto[tabela][action])
 
                 // Busca as permissões públicas e privadas de uma ação
-                const permissionPublic = await strapi
-                    .query("permission", "users-permissions")
-                    .find({ type: "application", role: publicRole.id, action: action, controller: tabela });
-
-                const permissionAuth = await strapi
-                    .query("permission", "users-permissions")
-                    .find({ type: "application", role: authenticatedRole.id, action: action, controller: tabela });
+                const [permissionPublic, permissionAuth] = await obterPermissoesAcao(type, action, tabela)
 
                 // Seta se essa ação está habilitada ou não, dependendo da permissão  
                 await updatePermissionsPublicRole(permissionPublic, enabledPublic)
@@ -106,6 +74,30 @@ const pluralize = require('pluralize')
             }
         }
     };
+
+    const obterPapelAcaoPorPermissao = (permissao) => {
+        if(permissao == PUBLIC) {
+            return [true, false]
+        }
+
+        if (permissao == AUTH) {
+            return [false, true]
+        }
+
+        return [true, true]
+    }
+
+    const obterPermissoesAcao = async (type, action, controller) => {
+        const permissionPublic = await strapi
+            .query("permission", "users-permissions")
+            .find({ type: type, role: publicRole.id, action, controller });
+
+        const permissionAuth = await strapi
+            .query("permission", "users-permissions")
+            .find({ type: type, role: authenticatedRole.id, action, controller });
+
+        return [permissionPublic, permissionAuth]
+    } 
 
     const updatePermissionsPublicRole = async (permissions, enabled) => {
         permissions.map(p => {
@@ -130,14 +122,6 @@ const pluralize = require('pluralize')
             })
         )
     }
-
-  const obterPapelPorPermissao = (permissao) => {
-    if (permissao == AUTH) {
-        return authenticatedRole
-    } else {
-        return publicRole
-    }
-  }
   
   const isFirstRun = async () => {
     const pluginStore = strapi.store({
@@ -161,7 +145,7 @@ module.exports = async() => {
 
     const shouldSetDefaultPermissions = await isFirstRun();
     if (shouldSetDefaultPermissions) {
-        await setDefaultPermissionsUser();
-        await setDefaultPermissionsApplication();
+        await setDefaultPermissionsApplication(permissionsUser, "users-permissions");
+        await setDefaultPermissionsApplication(permissionsByDatabase, "application");
     }
 };

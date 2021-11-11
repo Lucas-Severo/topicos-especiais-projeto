@@ -6,24 +6,28 @@
       dark
     >
       <div class="d-flex align-center">
-        <button @click="redirecionarTelaInicial">Portrait App</button>
+        <v-btn 
+          text 
+          @click="redirecionarTelaInicial">
+          Portrait App <v-icon>mdi-account-box-outline</v-icon>
+        </v-btn>
       </div>
 
       <v-spacer></v-spacer>
-
+      <label class="mr-3">{{usuario.slug}}</label>
       <v-btn
         v-if="usuarioAutenticado"
         text
         @click="deslogarUsuario"
       >
-        Deslogar
+        Sair<v-icon>mdi-logout</v-icon>
       </v-btn>
       <v-btn
         v-else
         text
         @click="redirecionarTelaLogin"
       >
-        Login
+        Entrar<v-icon>mdi-login</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -35,6 +39,8 @@
 
 <script>
 import store from './store'
+import AutenticacaoApiRequest from './utils/AutenticacaoApiRequest'
+import UsuarioApiRequest from './utils/UsuarioApiRequest'
 
 export default {
   name: 'App',
@@ -45,11 +51,18 @@ export default {
     },
     usuarioAutenticado() {
       return store.state.token !== ''
+    },
+    usuario() {
+      return store.state.userAuth
     }
   },
   data: () => ({
     
   }),
+  async mounted() {
+      await this.verificarTokenSalvoSessao()
+      await this.verificarUsuarioAutenticado()
+  },
   methods: {
     async redirecionarTelaInicial() {
       if (this.$route.name !== 'Home') {
@@ -60,6 +73,7 @@ export default {
     },
     async deslogarUsuario() {
       this.$store.commit('logOutUser')
+      localStorage.removeItem('token')
       await this.redirecionarTelaLogin()
     },
     async redirecionarTelaLogin() {
@@ -68,6 +82,26 @@ export default {
           name: 'Login'
         })
       }
+    },
+    async verificarUsuarioAutenticado() {
+        const rotasAutenticacao = ['Login', 'Cadastro']
+        if (rotasAutenticacao.includes(this.$route.name) && store.state.token !== '') {
+            await this.$router.push({
+                name: 'Home'
+            })
+        }
+    },
+    async verificarTokenSalvoSessao() {
+        const token = localStorage.getItem('token')
+        if (token) {
+            this.$store.commit('setToken', token)
+            const {data} = await AutenticacaoApiRequest.validateToken({token})
+            await this.buscarUsuarioAutenticado(data.id)
+        }
+    },
+    async buscarUsuarioAutenticado(usuarioId) {
+      const {data} = await UsuarioApiRequest.buscarUsuarioPorId(usuarioId)
+      this.$store.commit('setUserAuth', data)
     }
   }
 }

@@ -5,7 +5,7 @@
                 <h2 class="text-center">Realizar Cadastro</h2>
                     <div class="mb-10">
                         <v-text-field
-                            v-validate="'required'"
+                            v-validate="'required|max:100'"
                             v-model="nome"
                             :error-messages="errors.collect('nome')"
                             counter="100"
@@ -18,8 +18,9 @@
                             label="Email"
                             name="email"/>
                         <v-text-field
-                            v-validate="'required|alpha_dash'"
+                            v-validate="'required|alpha_dash|max:50'"
                             v-model="apelido"
+                            counter="50"
                             :error-messages="errors.collect('apelido')"
                             label="Apelido"
                             name="apelido"/>

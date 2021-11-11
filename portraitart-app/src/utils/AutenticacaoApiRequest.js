@@ -10,6 +10,10 @@ class AutenticacaoApiRequest {
         return axios.post('/users', data)
     }
 
+    async validateToken(data) {
+        return axios.post('/token/decrypt', data)
+    }
+
 }
 
 export default new AutenticacaoApiRequest()
