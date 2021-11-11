@@ -14,6 +14,7 @@ const pluralize = require('pluralize')
 
     const AUTH = 1
     const PUBLIC = 2
+    const BOTH = 3
     let publicRole = {}
     let authenticatedRole = {}
 
@@ -32,9 +33,9 @@ const pluralize = require('pluralize')
         retrato: {
             create: AUTH,
             delete: AUTH,
-            count: PUBLIC,
-            find: PUBLIC,
-            findone: PUBLIC,
+            count: BOTH,
+            find: BOTH,
+            findone: BOTH,
             update: AUTH
         }
     }
@@ -75,22 +76,60 @@ const pluralize = require('pluralize')
         const tabelas = Object.keys(permissionsByDatabase)
         
         for(let tabela of tabelas) {
-            const permissions = await strapi
-            .query("permission", "users-permissions")
-            .find({ type: "application", role: publicRole.id, controller: tabela });
+            for (let action of Object.keys(permissionsByDatabase[tabela])) {
+                let enabledAuth = false
+                let enabledPublic = false
 
-            await Promise.all(
-                permissions.map(p =>
-                    strapi
+                if(permissionsByDatabase[tabela][action] == PUBLIC) {
+                    enabledAuth = false
+                    enabledPublic = true
+                } else if (permissionsByDatabase[tabela][action] == AUTH) {
+                    enabledAuth = true
+                    enabledPublic = false
+                } else {
+                    enabledAuth = true
+                    enabledPublic = true
+                }
+
+                // Busca as permissões públicas e privadas de uma ação
+                const permissionPublic = await strapi
+                    .query("permission", "users-permissions")
+                    .find({ type: "application", role: publicRole.id, action: action, controller: tabela });
+
+                const permissionAuth = await strapi
+                    .query("permission", "users-permissions")
+                    .find({ type: "application", role: authenticatedRole.id, action: action, controller: tabela });
+
+                // Seta se essa ação está habilitada ou não, dependendo da permissão  
+                await updatePermissionsPublicRole(permissionPublic, enabledPublic)
+                await updatePermissionsAuthRole(permissionAuth, enabledAuth)
+            }
+        }
+    };
+
+    const updatePermissionsPublicRole = async (permissions, enabled) => {
+        permissions.map(p => {
+            strapi
+                .query("permission", "users-permissions")
+                .update({id: p.id}, { 
+                    enabled: enabled,
+                    role: publicRole
+                })
+        })
+    }
+
+    const updatePermissionsAuthRole = async (permissions, enabled) => {
+        await Promise.all(
+            permissions.map(p => {
+                strapi
                     .query("permission", "users-permissions")
                     .update({id: p.id}, { 
-                        enabled: true, 
-                        role: obterPapelPorPermissao(permissionsByDatabase[p.controller][p.action])
+                        enabled: enabled,
+                        role: authenticatedRole
                     })
-                )
-            );
-        }
-  };
+            })
+        )
+    }
 
   const obterPapelPorPermissao = (permissao) => {
     if (permissao == AUTH) {

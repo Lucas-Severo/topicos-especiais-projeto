@@ -38,6 +38,8 @@
 
 <script>
 
+import AutenticacaoApiRequest from '../utils/AutenticacaoApiRequest'
+
 export default {
   name: 'Login',
   data: () => ({
@@ -47,11 +49,27 @@ export default {
   }),
   methods: {
       async submit() {
-          const response = await this.$validator.validateAll()
+          if(await this.$validator.validateAll()) {
+            const {data, status} = await AutenticacaoApiRequest.login({
+                identifier: this.email,
+                password: this.senha
+            })
+            this.$store.commit('setToken', data.jwt)
+            this.$store.commit('setUserAuth', data.user)
+
+            if (status === 200) {
+                await this.redirecionarHome()
+            }
+          }
       },
       async redirecionarTelaCadastro() {
           await this.$router.push({
               name: 'Cadastro'
+          })
+      },
+      async redirecionarHome() {
+          await this.$router.push({
+              name: 'Home'
           })
       }
   }
