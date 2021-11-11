@@ -60,9 +60,8 @@ export default {
                 identifier: this.email,
                 password: this.senha
             })
-            
-            this.$store.commit('setToken', data.jwt)
-            this.$store.commit('setUserAuth', data.user)
+
+            this.inserirInformacoesAutenticacaoStore(data)
             
             if (this.keepLogged) {
                 localStorage.setItem('token', data.jwt)
@@ -72,6 +71,10 @@ export default {
                 await this.redirecionarHome()
             }
           }
+      },
+      inserirInformacoesAutenticacaoStore(informacoes) {
+        this.$store.commit('setToken', informacoes.jwt)
+        this.$store.commit('setUserAuth', informacoes.user)
       },
       async redirecionarTelaCadastro() {
           await this.$router.push({
