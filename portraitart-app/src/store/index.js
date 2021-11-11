@@ -16,6 +16,10 @@ export default new Vuex.Store({
     },
     setUserAuth(state, userAuth) {
       state.userAuth = userAuth
+    },
+    logOutUser(state) {
+      state.token = ''
+      state.userAuth = {}
     }
   },
   actions: {

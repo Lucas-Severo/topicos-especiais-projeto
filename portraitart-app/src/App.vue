@@ -12,6 +12,14 @@
       <v-spacer></v-spacer>
 
       <v-btn
+        v-if="usuarioAutenticado"
+        text
+        @click="deslogarUsuario"
+      >
+        Deslogar
+      </v-btn>
+      <v-btn
+        v-else
         text
         @click="redirecionarTelaLogin"
       >
@@ -26,6 +34,7 @@
 </template>
 
 <script>
+import store from './store'
 
 export default {
   name: 'App',
@@ -33,6 +42,9 @@ export default {
     ehRotaLogin() {
       const rotasAutenticacao = ['Cadastro', 'Login']
       return rotasAutenticacao.includes(this.$route.name)
+    },
+    usuarioAutenticado() {
+      return store.state.token !== ''
     }
   },
   data: () => ({
@@ -45,6 +57,10 @@ export default {
           name: 'Home'
         })
       }
+    },
+    async deslogarUsuario() {
+      this.$store.commit('logOutUser')
+      await this.redirecionarTelaLogin()
     },
     async redirecionarTelaLogin() {
       if (this.$route.name !== 'Login') {

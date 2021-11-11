@@ -6,6 +6,10 @@ class AutenticacaoApiRequest {
         return axios.post('/auth/local', data)
     }
 
+    async registrar(data) {
+        return axios.post('/users', data)
+    }
+
 }
 
 export default new AutenticacaoApiRequest()

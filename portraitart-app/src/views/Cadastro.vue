@@ -5,14 +5,21 @@
                 <h2 class="text-center">Realizar Cadastro</h2>
                     <div class="mb-10">
                         <v-text-field
+                            v-validate="'required'"
+                            v-model="nome"
+                            :error-messages="errors.collect('nome')"
+                            counter="100"
+                            label="Nome"
+                            name="nome"/>
+                        <v-text-field
                             v-validate="'required|email'"
                             v-model="email"
                             :error-messages="errors.collect('email')"
                             label="Email"
                             name="email"/>
                         <v-text-field
-                            v-validate="'required'"
-                            v-model="email"
+                            v-validate="'required|alpha_dash'"
+                            v-model="apelido"
                             :error-messages="errors.collect('apelido')"
                             label="Apelido"
                             name="apelido"/>
@@ -21,8 +28,8 @@
                             class="mb-3"
                             label="Senha"
                             v-validate="'required'"
-                            name="password"
-                            :error-messages="errors.collect('password')"
+                            name="senha"
+                            :error-messages="errors.collect('senha')"
                             :type="showPassword ? 'text' : 'password'"
                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                             @click:append="showPassword = !showPassword"/>
@@ -47,17 +54,30 @@
 
 <script>
 
+import AutenticacaoApiRequest from '../utils/AutenticacaoApiRequest'
+
 export default {
   name: 'Cadastro',
   data: () => ({
     showPassword: false,
+    nome: '',
     email: '',
     senha: '',
     apelido: ''
   }),
   methods: {
       async submit() {
-          const response = await this.$validator.validateAll()
+          if(await this.$validator.validateAll()) {
+            const {data, status} = await AutenticacaoApiRequest.registrar({
+                username: this.nome,
+                email: this.email,
+                password: this.senha,
+                slug: this.apelido
+            })
+            if(status === 201) {
+                await this.redirecionarTelaLogin()
+            }
+          }
       },
       async redirecionarTelaLogin() {
           await this.$router.push({

@@ -50,17 +50,26 @@ export default {
   methods: {
       async submit() {
           if(await this.$validator.validateAll()) {
-            const {data} = await AutenticacaoApiRequest.login({
+            const {data, status} = await AutenticacaoApiRequest.login({
                 identifier: this.email,
                 password: this.senha
             })
             this.$store.commit('setToken', data.jwt)
             this.$store.commit('setUserAuth', data.user)
+
+            if (status === 200) {
+                await this.redirecionarHome()
+            }
           }
       },
       async redirecionarTelaCadastro() {
           await this.$router.push({
               name: 'Cadastro'
+          })
+      },
+      async redirecionarHome() {
+          await this.$router.push({
+              name: 'Home'
           })
       }
   }
