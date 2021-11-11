@@ -11,6 +11,7 @@
                             label="Email"
                             name="email"/>
                         <v-text-field
+                            @keydown.enter="submit"
                             v-model="senha"
                             class="mb-3"
                             label="Senha"
@@ -22,7 +23,6 @@
                             @click:append="showPassword = !showPassword"/>
                         <v-checkbox
                             v-model="keepLogged"
-                            value="1"
                             label="Manter login"
                             type="checkbox"/>
                         <v-btn
@@ -51,7 +51,7 @@ export default {
     showPassword: false,
     email: '',
     senha: '',
-    keepLogged: false
+    keepLogged: true
   }),
   methods: {
       async submit() {

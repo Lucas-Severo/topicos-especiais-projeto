@@ -8,7 +8,9 @@ export default new Vuex.Store({
     token: '',
     userAuth: {
       
-    }
+    },
+    exibirAlerta: false,
+    mensagemAlerta: ''
   },
   mutations: {
     setToken(state, token) {
@@ -20,6 +22,18 @@ export default new Vuex.Store({
     logOutUser(state) {
       state.token = ''
       state.userAuth = {}
+    },
+    mostrarAlerta(state) {
+      state.exibirAlerta = true
+      setTimeout(() => {
+        state.exibirAlerta = false
+      }, 5000)
+    },
+    esconderAlerta(state) {
+      state.exibirAlerta = false
+    },
+    setMensagemAlerta(state, mensagem) {
+      state.mensagemAlerta = mensagem
     }
   },
   actions: {
