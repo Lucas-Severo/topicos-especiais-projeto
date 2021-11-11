@@ -24,7 +24,7 @@ const pluralize = require('pluralize')
             delete: AUTH,
             count: PUBLIC,
             find: PUBLIC,
-            findone: AUTH,
+            findone: BOTH,
             update: AUTH
         }
     }

@@ -20,6 +20,11 @@
                             :type="showPassword ? 'text' : 'password'"
                             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                             @click:append="showPassword = !showPassword"/>
+                        <v-checkbox
+                            v-model="keepLogged"
+                            value="1"
+                            label="Manter login"
+                            type="checkbox"/>
                         <v-btn
                             class="mr-4"
                             color="primary"
@@ -45,7 +50,8 @@ export default {
   data: () => ({
     showPassword: false,
     email: '',
-    senha: ''
+    senha: '',
+    keepLogged: false
   }),
   methods: {
       async submit() {
@@ -54,8 +60,13 @@ export default {
                 identifier: this.email,
                 password: this.senha
             })
+            
             this.$store.commit('setToken', data.jwt)
             this.$store.commit('setUserAuth', data.user)
+            
+            if (this.keepLogged) {
+                localStorage.setItem('token', data.jwt)
+            }
 
             if (status === 200) {
                 await this.redirecionarHome()

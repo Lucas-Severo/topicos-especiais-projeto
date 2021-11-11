@@ -35,6 +35,7 @@
 
 <script>
 import store from './store'
+import AutenticacaoApiRequest from './utils/AutenticacaoApiRequest'
 
 export default {
   name: 'App',
@@ -50,6 +51,10 @@ export default {
   data: () => ({
     
   }),
+  async mounted() {
+      await this.verificarTokenSalvoSessao()
+      await this.verificarUsuarioAutenticado()
+  },
   methods: {
     async redirecionarTelaInicial() {
       if (this.$route.name !== 'Home') {
@@ -60,6 +65,7 @@ export default {
     },
     async deslogarUsuario() {
       this.$store.commit('logOutUser')
+      localStorage.removeItem('token')
       await this.redirecionarTelaLogin()
     },
     async redirecionarTelaLogin() {
@@ -68,6 +74,21 @@ export default {
           name: 'Login'
         })
       }
+    },
+    async verificarUsuarioAutenticado() {
+        const rotasAutenticacao = ['Login', 'Cadastro']
+        if (rotasAutenticacao.includes(this.$route.name) && store.state.token !== '') {
+            await this.$router.push({
+                name: 'Home'
+            })
+        }
+    },
+    async verificarTokenSalvoSessao() {
+        const token = localStorage.getItem('token')
+        if (token) {
+            this.$store.commit('setToken', token)
+            await AutenticacaoApiRequest.validateToken({token})
+        }
     }
   }
 }
