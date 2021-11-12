@@ -63,10 +63,19 @@
       "via": "usuario",
       "collection": "retrato"
     },
-    "slug": {
-      "type": "uid",
-      "targetField": "username",
+    "name": {
+      "type": "string",
       "required": true
+    },
+    "profile_image": {
+      "collection": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images"
+      ],
+      "plugin": "upload",
+      "required": false,
+      "pluginOptions": {}
     }
   }
 }

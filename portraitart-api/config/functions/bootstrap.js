@@ -23,12 +23,18 @@ const pluralize = require('pluralize')
             create: PUBLIC,
             delete: AUTH,
             count: BOTH,
-            find: PUBLIC,
+            find: BOTH,
             findone: BOTH,
             update: AUTH
         },
         auth: {
             tokendecrypt: BOTH
+        }
+    }
+
+    const permissionsUpload = {
+        upload: {
+            upload: AUTH
         }
     }
 
@@ -146,6 +152,7 @@ module.exports = async() => {
     const shouldSetDefaultPermissions = await isFirstRun();
     if (shouldSetDefaultPermissions) {
         await setDefaultPermissionsApplication(permissionsUser, "users-permissions");
+        await setDefaultPermissionsApplication(permissionsUpload, "upload");
         await setDefaultPermissionsApplication(permissionsByDatabase, "application");
     }
 };

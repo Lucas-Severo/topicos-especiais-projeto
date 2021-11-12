@@ -3,6 +3,6 @@ export default {
         mensagem: 'Este e-mail já está cadastrado.'
     },
     "Auth.form.error.username.taken": {
-        mensagem: 'Este nome já está cadastrado.'
+        mensagem: 'Este apelido já está cadastrado.'
     }
 }
