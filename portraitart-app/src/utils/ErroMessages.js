@@ -4,5 +4,8 @@ export default {
     },
     "Auth.form.error.username.taken": {
         mensagem: 'Este apelido já está cadastrado.'
+    },
+    "Auth.form.error.invalid": {
+        mensagem: 'Usuário ou Senha inválidos'
     }
 }

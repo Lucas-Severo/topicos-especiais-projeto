@@ -6,6 +6,7 @@
                 <div v-if="userExists" class="d-flex align-center">
                     <ImagePicker
                         :value="getUser.profile_image"
+                        :readOnly="!ehUsuarioAutenticado"
                         @updateImage="updateImage"/>
                     <div class="d-flex">
                         <div>
@@ -24,6 +25,7 @@
 import UsuarioApiRequest from '../utils/UsuarioApiRequest'
 import ImageApiRequest from '../utils/ImageApiRequest'
 import ImagePicker from '../components/ImagePicker'
+import store from '../store'
 
 export default {
     name: 'PerfilUsuario',
@@ -35,9 +37,21 @@ export default {
         userExists: false,
         user: {}
     }),
+    watch: {
+        '$route.params': {
+            async handler() {
+                this.obterUserName()
+                await this.verificarDadosUsuario()
+            },
+            deep: true
+        }
+    },
     computed: {
         getUser() {
             return this.user
+        },
+        ehUsuarioAutenticado() {
+            return store.state.userAuth.id === this.user.id
         }
     },
     async mounted() {

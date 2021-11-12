@@ -67,7 +67,7 @@ export default {
     }
   },
   data: () => ({
-    
+    userName: ''
   }),
   async mounted() {
       await this.verificarTokenSalvoSessao()
@@ -114,13 +114,14 @@ export default {
       this.$store.commit('setUserAuth', data)
     },
     async redirecionarParaPerfilUsuario() {
-      if (this.$route.name !== 'PerfilUsuario') {
+      try {
         await this.$router.push({
           name: 'PerfilUsuario',
           params: {
             username: store.state.userAuth.username
           }
         })
+      } catch (err) {
       }
     }
   }
