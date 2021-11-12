@@ -1,5 +1,9 @@
 <template>
     <v-container fluid>
+        <Modal 
+            v-model="dialog"
+            :image="retratoModal"
+            @closeDialog="fecharModal"/>
         <v-row justify="center" align="center">
             <v-col cols="12" sm="6">
                 <p v-if="!userExists">Usuário Não Encontrado</p>
@@ -32,15 +36,16 @@
             </div>
             <v-row class="row">
                 <v-img
-                    v-for="retrato in retratos" 
+                    v-for="retrato in retratos"
+                    @click="() => abrirModalInfoImagem(retrato)"
                     class="col-1 mr-4 mb-2 retrato"
                     :key="retrato.id"
-                    :lazy-src="'http://localhost:1337'+retrato.imagem[0].url"
+                    :lazy-src="'http://localhost:1337'+retrato.imagem_baixa_definicao[0].url"
                     min-height="150"
                     min-width="250"
                     max-height="150"
                     max-width="250"
-                    :src="'http://localhost:1337'+retrato.imagem[0].url"/>
+                    :src="'http://localhost:1337'+retrato.imagem_baixa_definicao[0].url"/>
                 <div></div>
             </v-row>
         </div>
@@ -52,23 +57,29 @@ import UsuarioApiRequest from '../utils/UsuarioApiRequest'
 import RetratoApiRequest from '../utils/RetratoApiRequest'
 import ImageApiRequest from '../utils/ImageApiRequest'
 import ImagePicker from '../components/ImagePicker'
+import Modal from '../components/Modal'
 import store from '../store'
 
 export default {
     name: 'PerfilUsuario',
     components: {
-        ImagePicker
+        ImagePicker,
+        Modal
     },
-    data: () => ({
-        username: '',
-        userExists: false,
-        user: {},
-        limit: 12,
-        page: 1,
-        retratos: [],
-        totalPages: 1,
-        quantidadeTotal: 0
-    }),
+    data() {
+        return {
+            username: '',
+            userExists: false,
+            user: {},
+            limit: 12,
+            page: 1,
+            retratos: [],
+            totalPages: 1,
+            quantidadeTotal: 0,
+            dialog: false,
+            retratoModal: {}
+        }
+    },
     watch: {
         '$route.params': {
             async handler() {
@@ -131,6 +142,13 @@ export default {
             )
             this.retratos = data
             this.totalPages = Math.ceil(this.quantidadeTotal / this.limit)
+        },
+        abrirModalInfoImagem(imagem) {
+            this.retratoModal = imagem.imagem_baixa_definicao[0]
+            this.dialog = true
+        },
+        fecharModal() {
+            this.dialog = false
         }
     }
 }
