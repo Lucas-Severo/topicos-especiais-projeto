@@ -32,6 +32,12 @@ const pluralize = require('pluralize')
         }
     }
 
+    const permissionsUpload = {
+        upload: {
+            upload: AUTH
+        }
+    }
+
     const permissionsByDatabase = {
         retrato: {
             create: AUTH,
@@ -146,6 +152,7 @@ module.exports = async() => {
     const shouldSetDefaultPermissions = await isFirstRun();
     if (shouldSetDefaultPermissions) {
         await setDefaultPermissionsApplication(permissionsUser, "users-permissions");
+        await setDefaultPermissionsApplication(permissionsUpload, "upload");
         await setDefaultPermissionsApplication(permissionsByDatabase, "application");
     }
 };
