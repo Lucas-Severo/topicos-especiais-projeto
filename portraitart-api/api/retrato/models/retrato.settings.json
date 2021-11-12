@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "retrato",
   "info": {
-    "name": "retrato"
+    "name": "retrato",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -11,7 +12,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "imagem": {
+    "imagem_baixa_definicao": {
       "collection": "file",
       "via": "related",
       "allowedTypes": [
@@ -27,6 +28,16 @@
       "via": "retratos",
       "plugin": "users-permissions",
       "model": "user"
+    },
+    "imagem_alta_definicao": {
+      "collection": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images"
+      ],
+      "plugin": "upload",
+      "required": false,
+      "pluginOptions": {}
     }
   }
 }
