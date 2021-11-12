@@ -6,6 +6,10 @@ class UsuarioApiRequest {
         return axios.get(`/users/${id}`)
     }
 
+    async buscarUsuarioPorUserName(userName) {
+        return axios.get(`/users?username=${userName}`)
+    }
+
 }
 
 export default new UsuarioApiRequest()

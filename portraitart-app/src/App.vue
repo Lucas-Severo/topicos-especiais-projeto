@@ -14,7 +14,12 @@
       </div>
 
       <v-spacer></v-spacer>
-      <label class="mr-3">{{usuario.slug}}</label>
+      <button 
+        text
+        @click="redirecionarParaPerfilUsuario" 
+        class="mr-3">
+        {{usuario.username}}
+      </button>
       <v-btn
         v-if="usuarioAutenticado"
         text
@@ -107,6 +112,16 @@ export default {
     async buscarUsuarioAutenticado(usuarioId) {
       const {data} = await UsuarioApiRequest.buscarUsuarioPorId(usuarioId)
       this.$store.commit('setUserAuth', data)
+    },
+    async redirecionarParaPerfilUsuario() {
+      if (this.$route.name !== 'PerfilUsuario') {
+        await this.$router.push({
+          name: 'PerfilUsuario',
+          params: {
+            username: store.state.userAuth.username
+          }
+        })
+      }
     }
   }
 }

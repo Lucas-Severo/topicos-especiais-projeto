@@ -63,9 +63,8 @@
       "via": "usuario",
       "collection": "retrato"
     },
-    "slug": {
-      "type": "uid",
-      "targetField": "username",
+    "name": {
+      "type": "string",
       "required": true
     }
   }

@@ -23,7 +23,7 @@ const pluralize = require('pluralize')
             create: PUBLIC,
             delete: AUTH,
             count: BOTH,
-            find: PUBLIC,
+            find: BOTH,
             findone: BOTH,
             update: AUTH
         },

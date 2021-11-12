@@ -70,10 +70,10 @@ export default {
       async submit() {
           if(await this.$validator.validateAll()) {
             const {data, status} = await AutenticacaoApiRequest.registrar({
-                username: this.nome,
+                name: this.nome,
                 email: this.email,
                 password: this.senha,
-                slug: this.apelido
+                username: this.apelido
             })
             if(status === 201) {
                 await this.redirecionarTelaLogin()

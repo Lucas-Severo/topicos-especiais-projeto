@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import About from '../views/About.vue'
 import Login from '../views/Login.vue'
 import Cadastro from '../views/Cadastro.vue'
+import PerfilUsuario from '../views/PerfilUsuario.vue'
 
 Vue.use(VueRouter)
 
@@ -28,6 +29,11 @@ const routes = [
     path: '/cadastro',
     name: 'Cadastro',
     component: Cadastro
+  },
+  {
+    path: '/perfil/:username',
+    name: 'PerfilUsuario',
+    component: PerfilUsuario
   }
 ]
 
