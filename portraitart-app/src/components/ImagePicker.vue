@@ -1,15 +1,8 @@
 <template>
     <div>
-        <v-icon 
-            @click="editarImagem" 
-            class="image"
-            :class="[readOnly ? '': 'cursor-pointer hover']"
-            v-if="!edit && !contemImagem" dense size="150">
-            mdi-account
-        </v-icon>
         <v-img
             @click="editarImagem"
-            v-else-if="!edit && contemImagem"
+            v-if="!edit"
             :lazy-src="obterUrlImagem()"
             :height="height"
             :width="width"
@@ -66,14 +59,6 @@ export default {
             deep: true
         }
     },
-    computed: {
-        contemImagem() {
-            if (Array.isArray(this.image)) {
-                return this.image.length !== 0
-            }
-            return this.image !== undefined
-        }
-    },
     methods: {
         editarImagem() {
             if (!this.readOnly) {
@@ -90,7 +75,16 @@ export default {
             }
         },
         obterUrlImagem() {
+            if (!this.contemImagem()) {
+                return require("@/assets/default_profile_image.png")
+            }
             return "http://localhost:1337" + this.image[0].url
+        },
+        contemImagem() {
+            if (Array.isArray(this.image)) {
+                return this.image.length !== 0
+            }
+            return this.image !== undefined
         }
     }
 }
