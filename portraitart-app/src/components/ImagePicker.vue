@@ -1,15 +1,16 @@
 <template>
     <div>
-        <v-icon @click="editarImagem" v-if="!edit && !contemImagem" dense size="150">mdi-account</v-icon>
         <v-img
             @click="editarImagem"
-            v-else-if="!edit && contemImagem"
+            v-if="!edit"
             :lazy-src="obterUrlImagem()"
-            max-height="150"
-            max-width="250"
-            :src="obterUrlImagem()"
-            />
-        <div v-if="edit" class="d-flex align-center image-picker">
+            :height="height"
+            :width="width"
+            contain
+            class="image"
+            :class="[readOnly ? '': 'cursor-pointer editable-img']"
+            :src="obterUrlImagem()"/>
+        <div v-if="edit" class="d-flex align-top justify-center image-picker mt-5">
             <v-file-input
                 v-model="imageChanged"
                 label="ImagePicker"
@@ -17,7 +18,7 @@
                 filled
                 prepend-icon="mdi-camera"
             ></v-file-input>
-            <v-icon @click="selecionarImagem">mdi-check</v-icon>
+            <v-icon class="confirm-button" @click="selecionarImagem">mdi-check</v-icon>
         </div>
     </div>
 </template>
@@ -28,6 +29,18 @@ export default {
     props: {
         value: {
             type: Array
+        },
+        height: {
+            type: Number,
+            default: 100
+        },
+        width: {
+            type: Number,
+            default: 200
+        },
+        readOnly: {
+            type: Boolean,
+            default: true
         }
     },
     data() {
@@ -46,33 +59,61 @@ export default {
             deep: true
         }
     },
-    computed: {
-        contemImagem() {
-            if (Array.isArray(this.image)) {
-                return this.image.length !== 0
-            }
-            return this.image !== undefined
-        }
-    },
     methods: {
         editarImagem() {
-            this.edit = true
+            if (!this.readOnly) {
+                this.edit = true
+            }
         },
         selecionarImagem() {
             this.edit = false
             this.updateImage(this.imageChanged)
         },
         updateImage(image) {
-            this.$emit('updateImage', image)
+            if (image) {
+                this.$emit('updateImage', image)
+            }
         },
         obterUrlImagem() {
+            if (!this.contemImagem()) {
+                return require("@/assets/default_profile_image.png")
+            }
             return "http://localhost:1337" + this.image[0].url
+        },
+        contemImagem() {
+            if (Array.isArray(this.image)) {
+                return this.image.length !== 0
+            }
+            return this.image !== undefined
         }
     }
 }
 </script>
 
 <style lang="stylus" scoped>
-    .image-picker 
+    .image-picker
         width 300px
+        margin-right 18px
+
+    .confirm-button
+        color #1976d2
+        margin-bottom 20px
+        margin-left 5px
+
+    .image
+        position relative
+
+    .cursor-pointer
+        cursor pointer
+
+    .editable-img:hover::before
+        content: 'Mudar imagem'
+        color: #fff
+        background-color: #333a
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 100%
+        height: 100%
+    
 </style>
