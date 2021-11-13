@@ -15,6 +15,7 @@ instance.interceptors.request.use((config) => {
 }, function (error) {
     store.commit('mostrarAlerta')
     store.commit('setMensagemAlerta', 'Erro ao realizar a requisição.')
+    store.commit('setTipoMensagemAlerta', 'error')
     return Promise.reject(error)
 })
 
@@ -29,6 +30,7 @@ instance.interceptors.response.use((response) => {
 
     store.commit('mostrarAlerta')
     store.commit('setMensagemAlerta', mensagemErro.mensagem)
+    store.commit('setTipoMensagemAlerta', 'error')
     return Promise.reject(error);
   })
 

@@ -10,7 +10,8 @@ export default new Vuex.Store({
       
     },
     exibirAlerta: false,
-    mensagemAlerta: ''
+    mensagemAlerta: '',
+    tipoMensagemAlerta: 'error'
   },
   mutations: {
     setToken(state, token) {
@@ -34,6 +35,9 @@ export default new Vuex.Store({
     },
     setMensagemAlerta(state, mensagem) {
       state.mensagemAlerta = mensagem
+    },
+    setTipoMensagemAlerta(state, tipo) {
+      state.tipoMensagemAlerta = tipo
     }
   },
   actions: {
