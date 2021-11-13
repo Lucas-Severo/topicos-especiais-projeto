@@ -2,7 +2,8 @@
     <v-dialog
       v-model="dialog"
       @click:outside="closeDialog"
-      width="400"
+      @keydown.esc="closeDialog"
+      width="500"
     >
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
@@ -13,9 +14,9 @@
         </v-card-title>
 
         <div class="d-flex flex-column ml-4 mr-4 pb-5">
-            <div>
+            <v-form>
                 <v-text-field
-                    v-model="titulo"
+                    v-model="retrato.titulo"
                     v-validate="'max:50'"
                     :error-messages="errors.collect('titulo')"
                     label="Título"
@@ -23,39 +24,51 @@
                     name="titulo"/>
 
                 <v-text-field
+                    v-model="retrato.preco"
                     v-validate="'required'"
                     class="mb-4"
-                    v-model="preco"
+                    v-mask="currencyMask"
+                    maxlength="25"
                     :error-messages="errors.collect('preco')"
                     label="Preço"
                     name="preco"/>
 
                 <ImagePicker
-                    :value="qualidadeMinima"
+                    v-model="retrato.qualidadeMinima"
                     :profileMode="false"
                     :showDefaultImage="false"
                     :readOnly="false"
                     label="Qualidade Mínima"
                     :required="true"
                     name="qualidadeMinima"
-                    class="mr-5"/>
+                    :width="500"
+                    ref="qualidadeMinima"
+                    @showImageFullScreen="showImageFullScreen"
+                    @updateImage="atualizarImagemQualidadeMinima"/>
 
                 <ImagePicker
-                    :value="qualidadeMaxima"
+                    v-model="retrato.qualidadeMaxima"
                     :profileMode="false"
                     :showDefaultImage="false"
                     :readOnly="false"
                     label="Qualidade Máxima"
                     :required="true"
                     name="qualidadeMaxima"
-                    class="mr-5"/>
+                    :error-messages="errors.collect('qualidadeMaxima')"
+                    class="mt-5"
+                    :width="500"
+                    ref="qualidadeMaxima"
+                    @showImageFullScreen="showImageFullScreen"
+                    @updateImage="atualizarImagemQualidadeMaxima"/>
 
                 <v-btn 
                     @click="adicionarRetrato"
-                    color="primary">
+                    color="primary"
+                    block
+                    class="mt-3">
                     Adicionar
                 </v-btn>
-            </div>
+            </v-form>
         </div>
       </v-card>
     </v-dialog>
@@ -63,6 +76,19 @@
 
 <script>
 import ImagePicker from '../components/ImagePicker.vue'
+import createNumberMask from 'text-mask-addons/dist/createNumberMask'
+import ImageApiRequest from '../utils/ImageApiRequest'
+import RetratoApiRequest from '../utils/RetratoApiRequest'
+import store from '../store'
+
+const currencyMask = createNumberMask({
+    prefix: 'R$ ',
+    allowDecimal: true,
+    includeThousandsSeparator: true,
+    decimalSymbol: ',',
+    thousandsSeparatorSymbol: '.',
+    allowNegative: false,
+});
 
 export default {
     name: 'ModalAdicionarRetrato',
@@ -72,11 +98,14 @@ export default {
     },
     data() {
         return {
+            currencyMask,
             dialog: this.value,
-            titulo: '',
-            preco: '',
-            qualidadeMinima: null,
-            qualidadeMaxima: null
+            retrato: {
+                titulo: '',
+                preco: '',
+                qualidadeMinima: null,
+                qualidadeMaxima: null
+            }
         }
     },
     watch: {
@@ -89,7 +118,48 @@ export default {
             this.$emit('closeDialog');
         },
         async adicionarRetrato() {
-            await this.$validator.validateAll()
+            const primeiraImagem = await this.$refs.qualidadeMaxima.$validator.validateAll()
+            const segundaImagem = await this.$refs.qualidadeMinima.$validator.validateAll()
+            const camposObrigatoriosPreenchidos = await this.$validator.validateAll()
+            
+            if( primeiraImagem && segundaImagem && camposObrigatoriosPreenchidos) {
+                this.salvarRetrato()    
+            }
+        },
+        atualizarImagemQualidadeMinima(image) {
+            this.retrato.qualidadeMinima = image
+        },
+        atualizarImagemQualidadeMaxima(image) {
+            this.retrato.qualidadeMaxima = image
+        },
+        showImageFullScreen(image) {
+            this.$emit('showImageFullScreen', image)
+        },
+        async salvarRetrato() {
+            const {data: qualidadeMinima} = await ImageApiRequest.uploadImage(this.retrato.qualidadeMinima)
+            const {data: qualidadeMaxima} = await ImageApiRequest.uploadImage(this.retrato.qualidadeMaxima)
+
+            const retrato = {
+                imagem_baixa_definicao: qualidadeMinima[0].id,
+                imagem_alta_definicao: qualidadeMaxima[0].id,
+                usuario: store.state.userAuth.id
+            }
+
+            const {status} = await RetratoApiRequest.salvarRetrato(retrato)
+            
+            if (status === 200) {
+                this.retrato = {
+                    titulo: '',
+                    preco: 0,
+                    qualidadeMinima: null,
+                    qualidadeMaxima: null
+                }
+                this.$store.commit("mostrarAlerta")
+                this.$store.commit("setMensagemAlerta", "Retrato adicionado com sucesso!")
+                this.$store.commit('setTipoMensagemAlerta', 'success')
+            }
+
+            this.closeDialog()
         }
     }
 }

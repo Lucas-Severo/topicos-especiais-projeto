@@ -2,6 +2,7 @@
     <v-dialog
       v-model="dialog"
       @click:outside="closeDialog"
+      @keydown.esc="closeDialog"
       width="800"
     >
       <v-card>
@@ -9,7 +10,7 @@
           Informações Retrato
 
           <v-spacer/>
-          <v-icon @click="closeDialog">mdi-close</v-icon>
+          <v-icon color="error" @click="closeDialog">mdi-close</v-icon>
         </v-card-title>
 
         <div class="d-flex ml-5">

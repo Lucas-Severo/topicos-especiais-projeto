@@ -15,6 +15,10 @@ class RetratoApiRequest {
         return axios.get(`/retratos/count?usuario.username=${username}`)
     }
 
+    async salvarRetrato(retrato) {
+        return axios.post('/retratos', retrato)
+    }
+
 }
 
 export default new RetratoApiRequest()

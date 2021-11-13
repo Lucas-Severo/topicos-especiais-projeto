@@ -45,8 +45,10 @@
                 :error-messages="errors.collect(name)"
                 filled
                 prepend-icon="mdi-camera"
+                append-outer-icon="mdi-check"
+                @change="selecionarImagem"
+                @click:append-outer="selecionarImagem"
             ></v-file-input>
-            <v-icon class="confirm-button" @click="selecionarImagem">mdi-check</v-icon>
         </div>
     </div>
 </template>
@@ -56,7 +58,7 @@ export default {
     name: 'ImagePicker',
     props: {
         value: {
-            type: Object
+            type: [Object, File]
         },
         height: {
             type: Number,
@@ -88,7 +90,7 @@ export default {
         },
         name: {
             type: String,
-            default: 'label'
+            default: 'image'
         }
     },
     data() {
@@ -103,6 +105,7 @@ export default {
             handler(value) {
                 this.image = value
                 this.imageChanged = value
+                this.gerenciarDefaultImage()
             },
             deep: true
         }
@@ -113,7 +116,7 @@ export default {
                 return require("@/assets/default_profile_image.png")
             }
             if (this.image instanceof File) {
-                return URL.createObjectURL(this.image);
+                return URL.createObjectURL(this.image)
             }
             return "http://localhost:1337" + this.image.url
         }
@@ -127,9 +130,15 @@ export default {
                 this.edit = true
             }
         },
-        selecionarImagem() {
-            this.edit = false
-            this.updateImage(this.imageChanged)
+        async selecionarImagem() {
+            let allowEditImage = true
+            if (this.required) {
+                allowEditImage = await this.$validator.validateAll()
+            }
+            if (allowEditImage) {
+                this.edit = false
+                this.updateImage(this.imageChanged)
+            }
         },
         updateImage(image) {
             if (image && !Array.isArray(image)) {
@@ -156,15 +165,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    .image-picker
-        width 300px
-        margin-right 18px
-
-    .confirm-button
-        color #1976d2
-        margin-bottom 20px
-        margin-left 5px
-
     .cursor-pointer
         cursor pointer
 
