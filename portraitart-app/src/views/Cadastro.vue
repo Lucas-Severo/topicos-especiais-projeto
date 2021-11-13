@@ -76,6 +76,9 @@ export default {
                 username: this.apelido
             })
             if(status === 201) {
+                this.$store.commit("mostrarAlerta")
+                this.$store.commit("setMensagemAlerta", "Cadastro realizada com sucesso!")
+                this.$store.commit('setTipoMensagemAlerta', 'success')
                 await this.redirecionarTelaLogin()
             }
           }

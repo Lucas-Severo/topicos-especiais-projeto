@@ -68,6 +68,9 @@ export default {
             }
 
             if (status === 200) {
+                this.$store.commit("mostrarAlerta")
+                this.$store.commit("setMensagemAlerta", "Autenticação realizada com sucesso!")
+                this.$store.commit('setTipoMensagemAlerta', 'success')
                 await this.redirecionarHome()
             }
           }

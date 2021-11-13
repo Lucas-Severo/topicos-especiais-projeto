@@ -3,7 +3,7 @@
     :value="exibirAlerta"
     class="alerta"
     border="right"
-    type="error"
+    :type="tipoMensagemAlerta"
     dismissible
     transition="scale-transition"
     >
@@ -25,6 +25,9 @@ export default {
         },
         mensagemAlerta() {
             return store.state.mensagemAlerta
+        },
+        tipoMensagemAlerta() {
+            return store.state.tipoMensagemAlerta
         }
     },
     methods: {
