@@ -1,9 +1,12 @@
 <template>
     <v-container fluid>
-        <Modal 
+        <ModalRetrato 
             v-model="dialog"
             :image="retratoModal"
             @closeDialog="fecharModal"/>
+        <ModalAdicionarRetrato
+            v-model="dialogAdicionarRetrato"
+            @closeDialog="fecharModalAdicionarRetrato"/>
         <v-row justify="center" align="center">
             <v-col cols="12" sm="6">
                 <p v-if="!userExists">Usuário Não Encontrado</p>
@@ -11,19 +14,31 @@
                     <ImagePicker
                         :value="getUser.profile_image"
                         :readOnly="!ehUsuarioAutenticado"
-                        @updateImage="updateImage"/>
-                    <div class="d-flex">
-                        <div>
+                        :profileMode="true"
+                        class="mr-5"
+                        @updateImage="updateImage"
+                        @showImageFullScreen="showImageFullScreen"/>
+                    <div>
+                        <div class="d-flex">
                             <p class="mr-6"><span>{{user.name}}</span></p>
-                            <div>Retratos: {{quantidadeTotal}}</div>
+                            <p class="font-weight-bold h6">{{user.username}}</p>
                         </div>
-                        <p class="font-weight-bold h6">{{user.username}}</p>
+                        <div class="d-flex align-center">
+                            <p>Retratos: {{quantidadeTotal}}</p>
+                        </div>
                     </div>
                 </div>
             </v-col>
         </v-row>
         <div class="container mt-10" v-if="userExists">
             <h2 class="mb-3">{{quantidadeTotal}} Retratos</h2>
+
+            <v-btn 
+                v-if="ehUsuarioAutenticado"
+                @click="abrirModalAdicionarRetrato"
+                class="mb-5"
+                color="success">Novo Retrato
+            </v-btn>
 
             <div class="text-center">
                 <v-pagination
@@ -35,20 +50,33 @@
                 ></v-pagination>
             </div>
             <v-row class="row">
-                <v-img
+                <ImageHover
                     v-for="retrato in retratos"
-                    @click="() => abrirModalInfoImagem(retrato)"
-                    class="col-1 mr-4 mb-2 retrato"
+                    @click="()=>abrirModalInfoImagem(retrato)"
                     :key="retrato.id"
-                    :lazy-src="'http://localhost:1337'+retrato.imagem_baixa_definicao[0].url"
-                    min-height="150"
-                    min-width="250"
-                    max-height="150"
-                    max-width="250"
-                    :src="'http://localhost:1337'+retrato.imagem_baixa_definicao[0].url"/>
-                <div></div>
+                    :retrato="retrato"
+                    :minHeight="150"
+                    :minWidth="250"
+                    :maxHeight="150"
+                    :maxWidth="250"
+                    baseUrl="http://localhost:1337"
+                    :image="retrato.imagem_baixa_definicao[0]"
+                />
             </v-row>
         </div>
+
+        <v-overlay :value="showFullScreen">
+            <v-btn
+                class="absolute white--text"
+                color="black"
+                @click="showFullScreen = false">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+            <v-img
+                :src="obterImagemFullScreen()"
+                max-width="600"
+                max-height="600"/>
+        </v-overlay>
     </v-container>
 </template>
 
@@ -57,14 +85,18 @@ import UsuarioApiRequest from '../utils/UsuarioApiRequest'
 import RetratoApiRequest from '../utils/RetratoApiRequest'
 import ImageApiRequest from '../utils/ImageApiRequest'
 import ImagePicker from '../components/ImagePicker'
-import Modal from '../components/Modal'
+import ImageHover from '../components/ImageHover'
+import ModalRetrato from '../components/ModalRetrato'
+import ModalAdicionarRetrato from '../components/ModalAdicionarRetrato'
 import store from '../store'
 
 export default {
     name: 'PerfilUsuario',
     components: {
         ImagePicker,
-        Modal
+        ModalRetrato,
+        ModalAdicionarRetrato,
+        ImageHover
     },
     data() {
         return {
@@ -77,7 +109,10 @@ export default {
             totalPages: 1,
             quantidadeTotal: 0,
             dialog: false,
-            retratoModal: {}
+            dialogAdicionarRetrato: false,
+            retratoModal: {},
+            imageFullScreen: null,
+            showFullScreen: false
         }
     },
     watch: {
@@ -147,28 +182,32 @@ export default {
             this.retratoModal = imagem.imagem_baixa_definicao[0]
             this.dialog = true
         },
+        abrirModalAdicionarRetrato() {
+            this.dialogAdicionarRetrato = true
+        },
         fecharModal() {
             this.dialog = false
+        },
+        fecharModalAdicionarRetrato() {
+            this.dialogAdicionarRetrato = false
+        },
+        showImageFullScreen(image) {
+            this.imageFullScreen = image[0]
+            this.showFullScreen = true
+        },
+        obterImagemFullScreen() {
+            if (this.imageFullScreen) {
+                return 'http://localhost:1337' + this.imageFullScreen.url
+            }
         }
     }
 }
 </script>
 
 <style scoped lang="stylus">
-    .retrato
-        position relative
-        cursor pointer
-
-    .retrato:hover::before 
-        content: "👁";
-        position: absolute
+    .absolute
+        position fixed
         top 0
-        left 0
-        display: flex
-        justify-content: center
-        align-items: center
-        background-color #000a
-        color white
-        width 100%
-        height 100%
+        right 0
+        margin 10px
 </style>
