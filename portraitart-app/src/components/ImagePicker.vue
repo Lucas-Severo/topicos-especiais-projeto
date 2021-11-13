@@ -1,20 +1,48 @@
 <template>
     <div>
-        <v-img
-            @click="editarImagem"
-            v-if="!edit"
-            :lazy-src="obterUrlImagem()"
-            :height="height"
-            :width="width"
-            contain
-            class="image"
-            :class="[readOnly ? '': 'cursor-pointer editable-img']"
-            :src="obterUrlImagem()"/>
+        <v-hover
+            v-slot="{ hover }"
+        >
+            <div
+                :class="{ 'hover': hover }">
+                <v-img
+                    v-if="!edit"
+                    :lazy-src="obterUrlImagem"
+                    :height="height"
+                    :class="[profileMode && 'profile-mode']"
+                    :width="profileMode? height: width"
+                    :src="obterUrlImagem"/>
+
+                <v-menu top v-if="!edit">
+                    <template v-slot:activator="{ on, attrs }">
+                        <div
+                            class="cursor-pointer editable-container"
+                            v-bind="attrs"
+                            v-on="on">
+                            <v-icon size="20" v-if="readOnly" color="white">mdi-eye</v-icon>
+                            <v-icon v-else color="white">mdi-pencil-outline</v-icon>
+                        </div>
+                    </template>
+
+                    <v-list>
+                        <v-list-item v-if="!readOnly" @click="editarImagem">
+                            <v-list-item-title>Editar Imagem</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item @click="verImagem">
+                            <v-list-item-title>Ver Imagem</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+            </div>
+        </v-hover>
         <div v-if="edit" class="d-flex align-top justify-center image-picker mt-5">
             <v-file-input
                 v-model="imageChanged"
-                label="ImagePicker"
+                :label="label"
+                v-validate="required && 'required'"
                 accept="image/png, image/jpeg"
+                :name="name"
+                :error-messages="errors.collect(name)"
                 filled
                 prepend-icon="mdi-camera"
             ></v-file-input>
@@ -28,7 +56,7 @@ export default {
     name: 'ImagePicker',
     props: {
         value: {
-            type: Array
+            type: Object
         },
         height: {
             type: Number,
@@ -41,6 +69,26 @@ export default {
         readOnly: {
             type: Boolean,
             default: true
+        },
+        profileMode: {
+            type: Boolean,
+            default: false
+        },
+        showDefaultImage: {
+            type: Boolean,
+            default: true
+        },
+        label: {
+            type: String,
+            default: "Image Picker"
+        },
+        required: {
+            type: Boolean,
+            defeault: false
+        },
+        name: {
+            type: String,
+            default: 'label'
         }
     },
     data() {
@@ -59,6 +107,20 @@ export default {
             deep: true
         }
     },
+    computed: {
+        obterUrlImagem() {
+            if (!this.contemImagem()) {
+                return require("@/assets/default_profile_image.png")
+            }
+            if (this.image instanceof File) {
+                return URL.createObjectURL(this.image);
+            }
+            return "http://localhost:1337" + this.image.url
+        }
+    },
+    mounted() {
+        this.gerenciarDefaultImage()
+    },
     methods: {
         editarImagem() {
             if (!this.readOnly) {
@@ -70,21 +132,24 @@ export default {
             this.updateImage(this.imageChanged)
         },
         updateImage(image) {
-            if (image) {
+            if (image && !Array.isArray(image)) {
+                this.image = this.imageChanged
                 this.$emit('updateImage', image)
             }
-        },
-        obterUrlImagem() {
-            if (!this.contemImagem()) {
-                return require("@/assets/default_profile_image.png")
-            }
-            return "http://localhost:1337" + this.image[0].url
         },
         contemImagem() {
             if (Array.isArray(this.image)) {
                 return this.image.length !== 0
             }
-            return this.image !== undefined
+            return this.image !== undefined && this.image !== null
+        },
+        verImagem() {
+            this.$emit('showImageFullScreen', this.image)
+        },
+        gerenciarDefaultImage() {
+            if (!this.contemImagem() && !this.showDefaultImage) {
+                this.edit = true
+            }
         }
     }
 }
@@ -100,20 +165,28 @@ export default {
         margin-bottom 20px
         margin-left 5px
 
-    .image
-        position relative
-
     .cursor-pointer
         cursor pointer
 
-    .editable-img:hover::before
-        content: 'Mudar imagem'
+    .editable-container
+        position absolute
+        visibility: hidden
+
+    .hover
+        position relative
+
+    .hover .editable-container
+        visibility: visible
+        top: 0
+        left: 0
         color: #fff
-        background-color: #333a
+        background-color: #222a
         display: flex
         align-items: center
         justify-content: center
         width: 100%
         height: 100%
     
+    .profile-mode
+        border-radius: 50%
 </style>

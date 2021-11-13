@@ -38,7 +38,7 @@
 
 <script>
 export default {
-    name: 'Modal',
+    name: 'ModalRetrato',
     props: ['value', 'image'],
     data() {
         return {
