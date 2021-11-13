@@ -30,27 +30,25 @@
                     label="Preço"
                     name="preco"/>
 
-                <v-file-input
-                    v-model="qualidadeMinima"
-                    v-validate="'required'"
-                    name="qualidadeMinima"
-                    :error-messages="errors.collect('qualidadeMinima')"
+                <ImagePicker
+                    :value="qualidadeMinima"
+                    :profileMode="false"
+                    :showDefaultImage="false"
+                    :readOnly="false"
                     label="Qualidade Mínima"
-                    accept="image/png, image/jpeg"
-                    filled
-                    prepend-icon="mdi-camera"
-                ></v-file-input>
+                    :required="true"
+                    name="qualidadeMinima"
+                    class="mr-5"/>
 
-                <v-file-input
-                    v-model="qualidadeMaxima"
-                    v-validate="'required'"
+                <ImagePicker
+                    :value="qualidadeMaxima"
+                    :profileMode="false"
+                    :showDefaultImage="false"
+                    :readOnly="false"
+                    label="Qualidade Máxima"
+                    :required="true"
                     name="qualidadeMaxima"
-                    :error-messages="errors.collect('qualidadeMaxima')"
-                    label="Alta Definição"
-                    accept="image/png, image/jpeg"
-                    filled
-                    prepend-icon="mdi-camera"
-                ></v-file-input>
+                    class="mr-5"/>
 
                 <v-btn 
                     @click="adicionarRetrato"
@@ -64,9 +62,14 @@
 </template>
 
 <script>
+import ImagePicker from '../components/ImagePicker.vue'
+
 export default {
     name: 'ModalAdicionarRetrato',
     props: ['value'],
+    components: {
+        ImagePicker
+    },
     data() {
         return {
             dialog: this.value,

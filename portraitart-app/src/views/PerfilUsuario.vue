@@ -12,7 +12,7 @@
                 <p v-if="!userExists">Usuário Não Encontrado</p>
                 <div v-if="userExists" class="d-flex align-center">
                     <ImagePicker
-                        :value="getUser.profile_image"
+                        :value="getUser.profile_image[0]"
                         :readOnly="!ehUsuarioAutenticado"
                         :profileMode="true"
                         class="mr-5"
@@ -192,7 +192,7 @@ export default {
             this.dialogAdicionarRetrato = false
         },
         showImageFullScreen(image) {
-            this.imageFullScreen = image[0]
+            this.imageFullScreen = image
             this.showFullScreen = true
         },
         obterImagemFullScreen() {

@@ -7,11 +7,11 @@
                 :class="{ 'hover': hover }">
                 <v-img
                     v-if="!edit"
-                    :lazy-src="obterUrlImagem()"
+                    :lazy-src="obterUrlImagem"
                     :height="height"
                     :class="[profileMode && 'profile-mode']"
                     :width="profileMode? height: width"
-                    :src="obterUrlImagem()"/>
+                    :src="obterUrlImagem"/>
 
                 <v-menu top v-if="!edit">
                     <template v-slot:activator="{ on, attrs }">
@@ -38,8 +38,11 @@
         <div v-if="edit" class="d-flex align-top justify-center image-picker mt-5">
             <v-file-input
                 v-model="imageChanged"
-                label="ImagePicker"
+                :label="label"
+                v-validate="required && 'required'"
                 accept="image/png, image/jpeg"
+                :name="name"
+                :error-messages="errors.collect(name)"
                 filled
                 prepend-icon="mdi-camera"
             ></v-file-input>
@@ -53,7 +56,7 @@ export default {
     name: 'ImagePicker',
     props: {
         value: {
-            type: Array
+            type: Object
         },
         height: {
             type: Number,
@@ -70,6 +73,22 @@ export default {
         profileMode: {
             type: Boolean,
             default: false
+        },
+        showDefaultImage: {
+            type: Boolean,
+            default: true
+        },
+        label: {
+            type: String,
+            default: "Image Picker"
+        },
+        required: {
+            type: Boolean,
+            defeault: false
+        },
+        name: {
+            type: String,
+            default: 'label'
         }
     },
     data() {
@@ -88,6 +107,20 @@ export default {
             deep: true
         }
     },
+    computed: {
+        obterUrlImagem() {
+            if (!this.contemImagem()) {
+                return require("@/assets/default_profile_image.png")
+            }
+            if (this.image instanceof File) {
+                return URL.createObjectURL(this.image);
+            }
+            return "http://localhost:1337" + this.image.url
+        }
+    },
+    mounted() {
+        this.gerenciarDefaultImage()
+    },
     methods: {
         editarImagem() {
             if (!this.readOnly) {
@@ -100,23 +133,23 @@ export default {
         },
         updateImage(image) {
             if (image && !Array.isArray(image)) {
+                this.image = this.imageChanged
                 this.$emit('updateImage', image)
             }
-        },
-        obterUrlImagem() {
-            if (!this.contemImagem()) {
-                return require("@/assets/default_profile_image.png")
-            }
-            return "http://localhost:1337" + this.image[0].url
         },
         contemImagem() {
             if (Array.isArray(this.image)) {
                 return this.image.length !== 0
             }
-            return this.image !== undefined
+            return this.image !== undefined && this.image !== null
         },
         verImagem() {
             this.$emit('showImageFullScreen', this.image)
+        },
+        gerenciarDefaultImage() {
+            if (!this.contemImagem() && !this.showDefaultImage) {
+                this.edit = true
+            }
         }
     }
 }
