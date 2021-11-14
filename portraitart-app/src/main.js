@@ -4,6 +4,7 @@ import store from './store'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import VeeValidate, {Validator} from 'vee-validate'
+import VueMask from 'v-mask'
 import ptBR from 'vee-validate/dist/locale/pt_BR'
 
 Vue.config.productionTip = false
@@ -26,6 +27,7 @@ const config = {
 };
 
 Vue.use(VeeValidate, config);
+Vue.use(VueMask);
 
 Validator.localize('pt_BR', ptBR)
 

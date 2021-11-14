@@ -2,6 +2,7 @@
     <v-dialog
       v-model="dialog"
       @click:outside="closeDialog"
+      @keydown.esc="closeDialog"
       width="800"
     >
       <v-card>
@@ -9,7 +10,7 @@
           Informações Retrato
 
           <v-spacer/>
-          <v-icon @click="closeDialog">mdi-close</v-icon>
+          <v-icon color="error" @click="closeDialog">mdi-close</v-icon>
         </v-card-title>
 
         <div class="d-flex ml-5">
@@ -26,8 +27,8 @@
 
             <div class="d-flex flex-column justify-around mr-4">
                 <v-card-text>
-                    <h2 class="font-weight-bold">Título Retrato</h2>
-                    <p class="font-weight-bold">Preço: R$ 42,00</p>
+                    <h2 class="font-weight-bold">{{retrato.titulo}}</h2>
+                    <p class="font-weight-bold">Preço: {{retrato.preco}}</p>
                 </v-card-text>
                 <v-btn color="primary">Comprar</v-btn>
             </div>
@@ -39,7 +40,7 @@
 <script>
 export default {
     name: 'ModalRetrato',
-    props: ['value', 'image'],
+    props: ['value', 'image', 'retrato'],
     data() {
         return {
             dialog: this.value

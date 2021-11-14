@@ -3,10 +3,12 @@
         <ModalRetrato 
             v-model="dialog"
             :image="retratoModal"
+            :retrato="retratoInfo"
             @closeDialog="fecharModal"/>
         <ModalAdicionarRetrato
             v-model="dialogAdicionarRetrato"
-            @closeDialog="fecharModalAdicionarRetrato"/>
+            @closeDialog="fecharModalAdicionarRetrato"
+            @showImageFullScreen="showImageFullScreen"/>
         <v-row justify="center" align="center">
             <v-col cols="12" sm="6">
                 <p v-if="!userExists">Usuário Não Encontrado</p>
@@ -16,6 +18,7 @@
                         :readOnly="!ehUsuarioAutenticado"
                         :profileMode="true"
                         class="mr-5"
+                        :required="true"
                         @updateImage="updateImage"
                         @showImageFullScreen="showImageFullScreen"/>
                     <div>
@@ -65,7 +68,7 @@
             </v-row>
         </div>
 
-        <v-overlay :value="showFullScreen">
+        <v-overlay :value="showFullScreen" z-index="300">
             <v-btn
                 class="absolute white--text"
                 color="black"
@@ -111,6 +114,7 @@ export default {
             dialog: false,
             dialogAdicionarRetrato: false,
             retratoModal: {},
+            retratoInfo: {},
             imageFullScreen: null,
             showFullScreen: false
         }
@@ -153,14 +157,15 @@ export default {
             }
         },
         async updateImage(image) {
-            const {data} = await ImageApiRequest.uploadImage(image)
-
-            if (Array.isArray(data) && data.length > 0) {
-                const imageId = data[0]
-                const usuarioAlteracao = {...this.user}
-                usuarioAlteracao.profile_image = imageId
-                const response = await UsuarioApiRequest.atualizarUsuarioPorId(usuarioAlteracao.id, usuarioAlteracao)
-                this.user = {...response.data}
+            if (image instanceof File) {
+                const {data} = await ImageApiRequest.uploadImage(image)
+                if (Array.isArray(data) && data.length > 0) {
+                    const imageId = data[0]
+                    const usuarioAlteracao = {...this.user}
+                    usuarioAlteracao.profile_image = imageId
+                    const response = await UsuarioApiRequest.atualizarUsuarioPorId(usuarioAlteracao.id, usuarioAlteracao)
+                    this.user = {...response.data}
+                }
             }
         },
         async buscarQuantidadeRetratos() {
@@ -178,8 +183,9 @@ export default {
             this.retratos = data
             this.totalPages = Math.ceil(this.quantidadeTotal / this.limit)
         },
-        abrirModalInfoImagem(imagem) {
-            this.retratoModal = imagem.imagem_baixa_definicao[0]
+        abrirModalInfoImagem(retrato) {
+            this.retratoModal = retrato.imagem_baixa_definicao[0]
+            this.retratoInfo = retrato
             this.dialog = true
         },
         abrirModalAdicionarRetrato() {
@@ -190,12 +196,18 @@ export default {
         },
         fecharModalAdicionarRetrato() {
             this.dialogAdicionarRetrato = false
+
+            this.buscarQuantidadeRetratos()
+            this.buscarRetratosUsuario()
         },
         showImageFullScreen(image) {
             this.imageFullScreen = image
             this.showFullScreen = true
         },
         obterImagemFullScreen() {
+            if (this.imageFullScreen && this.imageFullScreen instanceof File) {
+                return URL.createObjectURL(this.imageFullScreen)
+            }
             if (this.imageFullScreen) {
                 return 'http://localhost:1337' + this.imageFullScreen.url
             }
