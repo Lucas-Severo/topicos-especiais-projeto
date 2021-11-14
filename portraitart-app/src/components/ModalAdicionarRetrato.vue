@@ -139,10 +139,14 @@ export default {
             const {data: qualidadeMinima} = await ImageApiRequest.uploadImage(this.retrato.qualidadeMinima)
             const {data: qualidadeMaxima} = await ImageApiRequest.uploadImage(this.retrato.qualidadeMaxima)
 
+            const precoSemFormatacao = this.obterPrecoSemFormatacao(this.retrato.preco)
+
             const retrato = {
                 imagem_baixa_definicao: qualidadeMinima[0].id,
                 imagem_alta_definicao: qualidadeMaxima[0].id,
-                usuario: store.state.userAuth.id
+                usuario: store.state.userAuth.id,
+                preco: precoSemFormatacao,
+                titulo: this.retrato.titulo
             }
 
             const {status} = await RetratoApiRequest.salvarRetrato(retrato)
@@ -160,6 +164,22 @@ export default {
             }
 
             this.closeDialog()
+        },
+        obterPrecoSemFormatacao(valor) {
+            const objetos = {
+                '.': ',',
+                ',': '.'
+            }
+            valor = valor.replace('R$ ', '')
+            valor = valor.replace(/.|,/g, function(matched){
+                if (matched === '.') {
+                    return ''
+                } else if (matched === ',') {
+                    return '.'
+                }
+                return matched
+            })
+            return valor
         }
     }
 }

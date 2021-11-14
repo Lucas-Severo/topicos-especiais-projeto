@@ -3,6 +3,7 @@
         <ModalRetrato 
             v-model="dialog"
             :image="retratoModal"
+            :retrato="retratoInfo"
             @closeDialog="fecharModal"/>
         <ModalAdicionarRetrato
             v-model="dialogAdicionarRetrato"
@@ -113,6 +114,7 @@ export default {
             dialog: false,
             dialogAdicionarRetrato: false,
             retratoModal: {},
+            retratoInfo: {},
             imageFullScreen: null,
             showFullScreen: false
         }
@@ -181,8 +183,9 @@ export default {
             this.retratos = data
             this.totalPages = Math.ceil(this.quantidadeTotal / this.limit)
         },
-        abrirModalInfoImagem(imagem) {
-            this.retratoModal = imagem.imagem_baixa_definicao[0]
+        abrirModalInfoImagem(retrato) {
+            this.retratoModal = retrato.imagem_baixa_definicao[0]
+            this.retratoInfo = retrato
             this.dialog = true
         },
         abrirModalAdicionarRetrato() {

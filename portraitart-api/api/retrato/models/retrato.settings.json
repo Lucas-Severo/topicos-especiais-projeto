@@ -38,6 +38,14 @@
       "plugin": "upload",
       "required": false,
       "pluginOptions": {}
+    },
+    "titulo": {
+      "type": "string"
+    },
+    "preco": {
+      "type": "float",
+      "private": false,
+      "required": true
     }
   }
 }
