@@ -61,11 +61,11 @@ export default {
             type: [Object, File]
         },
         height: {
-            type: Number,
+            type: [Number, String],
             default: 100
         },
         width: {
-            type: Number,
+            type: [Number, String],
             default: 200
         },
         readOnly: {
@@ -171,14 +171,14 @@ export default {
     .editable-container
         position absolute
         visibility: hidden
+        top: 0
+        left: 0
 
     .hover
         position relative
 
     .hover .editable-container
         visibility: visible
-        top: 0
-        left: 0
         color: #fff
         background-color: #222a
         display: flex

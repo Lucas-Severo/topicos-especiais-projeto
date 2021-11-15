@@ -6,6 +6,7 @@ import vuetify from './plugins/vuetify'
 import VeeValidate, {Validator} from 'vee-validate'
 import VueMask from 'v-mask'
 import ptBR from 'vee-validate/dist/locale/pt_BR'
+import obterPrecoSemFormatacao from './mixins/obterPrecoSemFormatacao'
 
 Vue.config.productionTip = false
 
@@ -26,10 +27,33 @@ const config = {
   useConstraintAttrs: true
 };
 
+const myMixin = {
+  methods: {
+    obterPrecoSemFormatacao(valor) {
+      const objetos = {
+          '.': ',',
+          ',': '.'
+      }
+      valor = valor.replace('R$ ', '')
+      valor = valor.replace(/.|,/g, function(matched){
+          if (matched === '.') {
+              return ''
+          } else if (matched === ',') {
+              return '.'
+          }
+          return matched
+      })
+      return valor
+    }
+  }
+}
+
 Vue.use(VeeValidate, config);
 Vue.use(VueMask);
 
 Validator.localize('pt_BR', ptBR)
+
+Vue.mixin(myMixin)
 
 new Vue({
   store,

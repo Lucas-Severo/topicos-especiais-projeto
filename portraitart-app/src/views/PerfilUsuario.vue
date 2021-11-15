@@ -1,10 +1,6 @@
 <template>
     <v-container fluid>
-        <ModalRetrato 
-            v-model="dialog"
-            :image="retratoModal"
-            :retrato="retratoInfo"
-            @closeDialog="fecharModal"/>
+        <ModalRetrato/>
         <ModalAdicionarRetrato
             v-model="dialogAdicionarRetrato"
             @closeDialog="fecharModalAdicionarRetrato"
@@ -68,18 +64,7 @@
             </v-row>
         </div>
 
-        <v-overlay :value="showFullScreen" z-index="300">
-            <v-btn
-                class="absolute white--text"
-                color="black"
-                @click="showFullScreen = false">
-                <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <v-img
-                :src="obterImagemFullScreen()"
-                max-width="600"
-                max-height="600"/>
-        </v-overlay>
+        <FullScreenImage/>
     </v-container>
 </template>
 
@@ -92,6 +77,7 @@ import ImageHover from '../components/ImageHover'
 import ModalRetrato from '../components/ModalRetrato'
 import ModalAdicionarRetrato from '../components/ModalAdicionarRetrato'
 import store from '../store'
+import FullScreenImage from '../components/FullScreenImage.vue'
 
 export default {
     name: 'PerfilUsuario',
@@ -99,7 +85,8 @@ export default {
         ImagePicker,
         ModalRetrato,
         ModalAdicionarRetrato,
-        ImageHover
+        ImageHover,
+        FullScreenImage
     },
     data() {
         return {
@@ -111,12 +98,9 @@ export default {
             retratos: [],
             totalPages: 1,
             quantidadeTotal: 0,
-            dialog: false,
             dialogAdicionarRetrato: false,
-            retratoModal: {},
-            retratoInfo: {},
             imageFullScreen: null,
-            showFullScreen: false
+            showFullScreen: false,
         }
     },
     watch: {
@@ -184,15 +168,11 @@ export default {
             this.totalPages = Math.ceil(this.quantidadeTotal / this.limit)
         },
         abrirModalInfoImagem(retrato) {
-            this.retratoModal = retrato.imagem_baixa_definicao[0]
-            this.retratoInfo = retrato
-            this.dialog = true
+            this.$store.commit('setModalModalRetrato', true)
+            this.$store.commit('setRetratoModalRetrato', retrato)  
         },
         abrirModalAdicionarRetrato() {
             this.dialogAdicionarRetrato = true
-        },
-        fecharModal() {
-            this.dialog = false
         },
         fecharModalAdicionarRetrato() {
             this.dialogAdicionarRetrato = false
@@ -201,25 +181,12 @@ export default {
             this.buscarRetratosUsuario()
         },
         showImageFullScreen(image) {
-            this.imageFullScreen = image
-            this.showFullScreen = true
-        },
-        obterImagemFullScreen() {
-            if (this.imageFullScreen && this.imageFullScreen instanceof File) {
-                return URL.createObjectURL(this.imageFullScreen)
-            }
-            if (this.imageFullScreen) {
-                return 'http://localhost:1337' + this.imageFullScreen.url
-            }
+            this.$store.commit('setMostrarImagemFullScreen', true)
+            this.$store.commit('setImagemFullScreen', image)
         }
     }
 }
 </script>
 
 <style scoped lang="stylus">
-    .absolute
-        position fixed
-        top 0
-        right 0
-        margin 10px
 </style>

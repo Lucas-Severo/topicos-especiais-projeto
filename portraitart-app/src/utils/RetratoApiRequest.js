@@ -19,6 +19,10 @@ class RetratoApiRequest {
         return axios.post('/retratos', retrato)
     }
 
+    async atualizarRetrato(retrato) {
+        return axios.put(`/retratos/${retrato.id}`, retrato)
+    }
+
 }
 
 export default new RetratoApiRequest()
