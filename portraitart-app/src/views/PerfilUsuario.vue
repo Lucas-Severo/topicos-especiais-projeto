@@ -167,9 +167,14 @@ export default {
             this.retratos = data
             this.totalPages = Math.ceil(this.quantidadeTotal / this.limit)
         },
-        abrirModalInfoImagem(retrato) {
-            this.$store.commit('setModalModalRetrato', true)
-            this.$store.commit('setRetratoModalRetrato', retrato)  
+        async abrirModalInfoImagem(retrato) {
+            await this.$router.push({
+                name: 'ModalRetrato',
+                params: {
+                    ...this.$route.params,
+                    uid: retrato.uid
+                }
+            })
         },
         abrirModalAdicionarRetrato() {
             this.dialogAdicionarRetrato = true

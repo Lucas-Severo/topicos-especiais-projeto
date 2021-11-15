@@ -148,7 +148,8 @@ export default {
                 imagem_alta_definicao: qualidadeMaxima[0].id,
                 usuario: store.state.userAuth.id,
                 preco: precoSemFormatacao,
-                titulo: this.retrato.titulo
+                titulo: this.retrato.titulo,
+                uid: qualidadeMinima[0].hash
             }
 
             const {status} = await RetratoApiRequest.salvarRetrato(retrato)

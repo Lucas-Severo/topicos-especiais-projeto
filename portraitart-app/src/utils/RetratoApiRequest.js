@@ -23,6 +23,10 @@ class RetratoApiRequest {
         return axios.put(`/retratos/${retrato.id}`, retrato)
     }
 
+    async buscarPorUidEUserName(uid, username) {
+        return axios.get(`/retratos?uid=${uid}&usuario.username=${username}`)
+    }
+
 }
 
 export default new RetratoApiRequest()

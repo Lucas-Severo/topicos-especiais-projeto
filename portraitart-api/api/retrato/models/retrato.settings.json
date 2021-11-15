@@ -46,6 +46,11 @@
       "type": "float",
       "private": false,
       "required": true
+    },
+    "uid": {
+      "type": "uid",
+      "targetField": "titulo",
+      "required": true
     }
   }
 }

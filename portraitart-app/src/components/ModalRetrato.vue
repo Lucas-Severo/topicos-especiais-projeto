@@ -88,6 +88,21 @@ export default {
                 this.setImagemBaixaDefinicao()
             },
             deep: true
+        },
+        '$route.params': {
+            async handler(value) {
+                if (value.uid) {
+                    await this.buscarRetrato(value.uid, value.username)
+                }
+            }
+        }
+    },
+    async mounted() {
+        const uid = this.$route.params.uid
+        const username = this.$route.params.username
+
+        if (uid) {
+            await this.buscarRetrato(uid, username)
         }
     },
     computed: {
@@ -103,8 +118,17 @@ export default {
         }
     },
     methods: {
-        closeDialog() {
+        async closeDialog() {
             this.$store.commit('setModalModalRetrato', false)
+            await this.redirecionarTelaPerfil()
+        },
+        async redirecionarTelaPerfil() {
+            await this.$router.push({
+                name: 'PerfilUsuario',
+                params: {
+                    username: this.$route.params.username
+                }
+            })
         },
         obterUrlImagem() {
             if (this.image) {
@@ -146,6 +170,23 @@ export default {
             this.$store.commit("mostrarAlerta")
             this.$store.commit("setMensagemAlerta", "Retrato atualizado com sucesso!")
             this.$store.commit('setTipoMensagemAlerta', 'success')
+        },
+        mostrarMensagemErro(erro) {
+            this.$store.commit("mostrarAlerta")
+            this.$store.commit("setMensagemAlerta", erro)
+            this.$store.commit('setTipoMensagemAlerta', 'error')
+        },
+        async buscarRetrato(uid, username) {
+            this.$store.commit('setModalModalRetrato', true)
+            const {data: retrato} = await RetratoApiRequest.buscarPorUidEUserName(uid, username)
+            
+            if (retrato.length === 0) {
+                this.mostrarMensagemErro("Retrato não encontrado!")
+                await this.closeDialog()
+            } else {
+                this.$store.commit('setRetratoModalRetrato', retrato[0])
+            }
+            
         }
     }
 }
