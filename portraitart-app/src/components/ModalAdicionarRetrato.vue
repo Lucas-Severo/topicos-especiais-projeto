@@ -34,6 +34,18 @@
                     label="Preço"
                     name="preco"/>
 
+                <v-autocomplete
+                    v-model="retrato.categoria"
+                    v-validate="'required'"
+                    :items="categorias"
+                    :key="'retrato_categoria'+precoKey"
+                    item-text="nome"
+                    item-value="id"
+                    name="categoria"
+                    :error-messages="errors.collect('categoria')"
+                    label="Categoria"
+                ></v-autocomplete>
+
                 <ImagePicker
                     v-model="retrato.qualidadeMinima"
                     :profileMode="false"
@@ -80,6 +92,7 @@ import ImagePicker from '../components/ImagePicker.vue'
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import ImageApiRequest from '../utils/ImageApiRequest'
 import RetratoApiRequest from '../utils/RetratoApiRequest'
+import CategoriaApiRequest from '../utils/CategoriaApiRequest'
 import store from '../store'
 
 const currencyMask = createNumberMask({
@@ -107,13 +120,17 @@ export default {
                 qualidadeMinima: null,
                 qualidadeMaxima: null
             },
-            precoKey: 1
+            precoKey: 1,
+            categorias: []
         }
     },
     watch: {
         'value'(valor) {
             this.dialog = valor
         }
+    },
+    async mounted() {
+        await this.buscarCategorias()
     },
     methods: {
         closeDialog() {
@@ -137,6 +154,11 @@ export default {
         showImageFullScreen(image) {
             this.$emit('showImageFullScreen', image)
         },
+        async buscarCategorias() {
+            const {data: categorias} = await CategoriaApiRequest.buscarTodos()
+
+            this.categorias = categorias
+        },
         async salvarRetrato() {
             const {data: qualidadeMinima} = await ImageApiRequest.uploadImage(this.retrato.qualidadeMinima)
             const {data: qualidadeMaxima} = await ImageApiRequest.uploadImage(this.retrato.qualidadeMaxima)
@@ -149,7 +171,8 @@ export default {
                 usuario: store.state.userAuth.id,
                 preco: precoSemFormatacao,
                 titulo: this.retrato.titulo,
-                uid: qualidadeMinima[0].hash
+                uid: qualidadeMinima[0].hash,
+                categoria: this.retrato.categoria
             }
 
             const {status} = await RetratoApiRequest.salvarRetrato(retrato)
@@ -162,7 +185,8 @@ export default {
                     titulo: '',
                     preco: '',
                     qualidadeMinima: null,
-                    qualidadeMaxima: null
+                    qualidadeMaxima: null,
+                    categoria: {}
                 }
 
                 this.$nextTick(() => {
@@ -176,7 +200,6 @@ export default {
                 this.$store.commit("setMensagemAlerta", "Retrato adicionado com sucesso!")
                 this.$store.commit('setTipoMensagemAlerta', 'success')
             }
-            
 
             this.closeDialog()
         }

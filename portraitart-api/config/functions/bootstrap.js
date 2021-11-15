@@ -1,6 +1,7 @@
 'use strict';
 
 const pluralize = require('pluralize')
+const categorias = require('./categorias')
 
 /**
  * An asynchronous bootstrap function that runs before
@@ -46,6 +47,11 @@ const pluralize = require('pluralize')
             find: BOTH,
             findone: BOTH,
             update: AUTH
+        },
+        categoria: {
+            find: BOTH,
+            findone: BOTH,
+            count: BOTH
         }
     }
 
@@ -142,6 +148,17 @@ const pluralize = require('pluralize')
 
 const definePluralization = () => {
     pluralize.addPluralRule('retrato', 'retratos')
+    pluralize.addPluralRule('categoria', 'categorias')
+}
+
+const seedCategorias = () => {
+    categorias.categorias.forEach((categoria) => {
+        strapi
+        .query("categoria")
+        .create({
+            nome: categoria
+        })
+    })
 }
 
 module.exports = async() => {
@@ -154,5 +171,7 @@ module.exports = async() => {
         await setDefaultPermissionsApplication(permissionsUser, "users-permissions");
         await setDefaultPermissionsApplication(permissionsUpload, "upload");
         await setDefaultPermissionsApplication(permissionsByDatabase, "application");
+
+        seedCategorias()
     }
 };
