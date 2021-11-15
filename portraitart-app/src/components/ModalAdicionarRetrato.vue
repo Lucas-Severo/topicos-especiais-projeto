@@ -27,6 +27,7 @@
                     v-model="retrato.preco"
                     v-validate="'required'"
                     class="mb-4"
+                    :key="'retrato_preco'+precoKey"
                     v-mask="currencyMask"
                     maxlength="25"
                     :error-messages="errors.collect('preco')"
@@ -105,7 +106,8 @@ export default {
                 preco: '',
                 qualidadeMinima: null,
                 qualidadeMaxima: null
-            }
+            },
+            precoKey: 1
         }
     },
     watch: {
@@ -152,34 +154,30 @@ export default {
             const {status} = await RetratoApiRequest.salvarRetrato(retrato)
             
             if (status === 200) {
+                await this.$validator.pause()
+                this.precoKey++
+                
                 this.retrato = {
                     titulo: '',
-                    preco: 0,
+                    preco: '',
                     qualidadeMinima: null,
                     qualidadeMaxima: null
                 }
+
+                this.$nextTick(() => {
+                    this.$validator.errors.clear()
+                    this.$validator.fields.items.forEach(field => field.reset())
+                    this.$validator.fields.items.forEach(field => this.errors.remove(field))
+                    this.$validator.resume()  
+                })
+
                 this.$store.commit("mostrarAlerta")
                 this.$store.commit("setMensagemAlerta", "Retrato adicionado com sucesso!")
                 this.$store.commit('setTipoMensagemAlerta', 'success')
             }
+            
 
             this.closeDialog()
-        },
-        obterPrecoSemFormatacao(valor) {
-            const objetos = {
-                '.': ',',
-                ',': '.'
-            }
-            valor = valor.replace('R$ ', '')
-            valor = valor.replace(/.|,/g, function(matched){
-                if (matched === '.') {
-                    return ''
-                } else if (matched === ',') {
-                    return '.'
-                }
-                return matched
-            })
-            return valor
         }
     }
 }

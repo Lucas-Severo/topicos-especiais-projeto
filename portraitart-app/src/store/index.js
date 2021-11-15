@@ -11,7 +11,15 @@ export default new Vuex.Store({
     },
     exibirAlerta: false,
     mensagemAlerta: '',
-    tipoMensagemAlerta: 'error'
+    tipoMensagemAlerta: 'error',
+    modalRetrato: {
+      mostrarModal: false,
+      retrato: {}
+    },
+    fullScreenImage: {
+      mostrarImagemFullScreen: false,
+      imagemFullScreen: null
+    }
   },
   mutations: {
     setToken(state, token) {
@@ -38,6 +46,22 @@ export default new Vuex.Store({
     },
     setTipoMensagemAlerta(state, tipo) {
       state.tipoMensagemAlerta = tipo
+    },
+
+    // Modal Retrato
+    setModalModalRetrato(state, status) {
+      state.modalRetrato.mostrarModal = status
+    },
+    setRetratoModalRetrato(state, retrato) {
+      state.modalRetrato.retrato = retrato
+    },
+
+    //Imagem FullScreen,
+    setMostrarImagemFullScreen(state, status) {
+      state.fullScreenImage.mostrarImagemFullScreen = status
+    },
+    setImagemFullScreen(state, imagem) {
+      state.fullScreenImage.imagemFullScreen = imagem
     }
   },
   actions: {

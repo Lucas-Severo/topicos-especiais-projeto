@@ -2,6 +2,12 @@
   "name": "portraitart-app",
   "version": "0.1.0",
   "private": true,
+  "author" : "Lucas Rodrigues Severo",
+  "email" : "lucasrodriguesevero@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lucas-Severo/topicos-especiais-projeto.git"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
