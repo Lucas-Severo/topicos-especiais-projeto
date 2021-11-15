@@ -5,6 +5,7 @@ import About from '../views/About.vue'
 import Login from '../views/Login.vue'
 import Cadastro from '../views/Cadastro.vue'
 import PerfilUsuario from '../views/PerfilUsuario.vue'
+import ModalRetrato from '../components/ModalRetrato'
 
 Vue.use(VueRouter)
 
@@ -33,7 +34,14 @@ const routes = [
   {
     path: '/perfil/:username',
     name: 'PerfilUsuario',
-    component: PerfilUsuario
+    component: PerfilUsuario,
+    children: [
+      {
+        path: 'retrato/:uid',
+        name: 'ModalRetrato',
+        component: ModalRetrato
+      }
+    ]
   }
 ]
 
