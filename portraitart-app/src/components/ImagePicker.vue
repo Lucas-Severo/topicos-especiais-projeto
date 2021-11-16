@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import ConfigProvider from '../utils/ConfigProvider'
+
 export default {
     name: 'ImagePicker',
     props: {
@@ -118,7 +120,7 @@ export default {
             if (this.image instanceof File) {
                 return URL.createObjectURL(this.image)
             }
-            return "http://localhost:1337" + this.image.url
+            return ConfigProvider.getBaseUrl() + this.image.url
         }
     },
     mounted() {

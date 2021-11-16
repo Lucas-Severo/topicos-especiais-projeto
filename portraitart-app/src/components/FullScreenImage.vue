@@ -35,6 +35,7 @@
 
 <script>
 import store from '../store'
+import ConfigProvider from '../utils/ConfigProvider'
 
 export default {
     name: 'FullScreenImage',
@@ -50,7 +51,7 @@ export default {
                 return URL.createObjectURL(imagemFullScreen)
             }
             if (imagemFullScreen) {
-                return 'http://localhost:1337' + imagemFullScreen.url
+                return ConfigProvider.getBaseUrl() + imagemFullScreen.url
             }
         },
         mostrarImagemFullScreen() {
