@@ -1,7 +1,7 @@
 class ConfigProvider {
 
     getBaseUrl() {
-        return process.env.baseURL || 'http://localhost:1337'
+        return process.env.BASE_URL || 'http://localhost:1337'
     }
 
 }
