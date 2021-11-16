@@ -3,7 +3,7 @@ import store from '../store'
 import ErroMessages from './ErroMessages';
 
 const instance = axios.create({
-    baseURL: process.env.BASE_URL || 'http://localhost:1337'
+    baseURL: process.env.API_URL || 'http://localhost:1337'
 });
 
 instance.interceptors.request.use((config) => {
