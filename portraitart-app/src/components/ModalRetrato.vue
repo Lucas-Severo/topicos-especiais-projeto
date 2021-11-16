@@ -82,6 +82,7 @@ import CategoriaApiRequest from '../utils/CategoriaApiRequest'
 import store from '../store'
 import EditableText from './EditableText.vue'
 import EditableAutoComplete from './EditableAutoComplete'
+import ConfigProvider from '../utils/ConfigProvider'
 
 export default {
     name: 'ModalRetrato',
@@ -151,7 +152,7 @@ export default {
         },
         obterUrlImagem() {
             if (this.image) {
-                return 'http://localhost:1337'+this.imagemBaixaDefinicao.url
+                return ConfigProvider.getBaseUrl()+this.imagemBaixaDefinicao.url
             }
         },
         setImagemBaixaDefinicao() {

@@ -58,7 +58,7 @@
                     :minWidth="250"
                     :maxHeight="150"
                     :maxWidth="250"
-                    baseUrl="http://localhost:1337"
+                    :baseUrl="baseURL"
                     :image="retrato.imagem_baixa_definicao[0]"
                 />
             </v-row>
@@ -78,6 +78,7 @@ import ModalRetrato from '../components/ModalRetrato'
 import ModalAdicionarRetrato from '../components/ModalAdicionarRetrato'
 import store from '../store'
 import FullScreenImage from '../components/FullScreenImage.vue'
+import ConfigProvider from '../utils/ConfigProvider'
 
 export default {
     name: 'PerfilUsuario',
@@ -120,6 +121,9 @@ export default {
         },
         ehUsuarioAutenticado() {
             return store.state.userAuth.id === this.user.id
+        },
+        baseURL() {
+            return ConfigProvider.getBaseUrl()
         }
     },
     async mounted() {
