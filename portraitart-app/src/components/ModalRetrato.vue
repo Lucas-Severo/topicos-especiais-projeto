@@ -54,6 +54,18 @@
                         :readOnly="!ehUsuarioAutenticado"
                         noValueMessage="Sem Preço"
                         @updateValue="atualizarPreco"/>
+
+                    <editable-auto-complete
+                        v-model="retrato.categoria"
+                        :key="'categoria'+retrato.id"
+                        :items="categorias"
+                        class="mt-3"
+                        :required="true"
+                        :readOnly="!ehUsuarioAutenticado"
+                        name="categoria"
+                        label="Categorias"
+                        noValueMessage="Categoria não selecionada"
+                        @updateValue="atualizarCategoria"/>
                 </v-card-text>
                 <v-btn color="primary">Comprar</v-btn>
             </div>
@@ -66,19 +78,24 @@
 import ImagePicker from '../components/ImagePicker'
 import ImageApiRequest from '../utils/ImageApiRequest'
 import RetratoApiRequest from '../utils/RetratoApiRequest'
+import CategoriaApiRequest from '../utils/CategoriaApiRequest'
 import store from '../store'
 import EditableText from './EditableText.vue'
+import EditableAutoComplete from './EditableAutoComplete'
 
 export default {
     name: 'ModalRetrato',
     components: {
         ImagePicker,
-        EditableText
+        EditableText,
+        EditableAutoComplete,
+        EditableAutoComplete
     },
     data() {
         return {
             retrato: store.state.modalRetrato.retrato,
-            imagemBaixaDefinicao: null
+            imagemBaixaDefinicao: null,
+            categorias: []
         }
     },
     watch: {
@@ -104,6 +121,8 @@ export default {
         if (uid) {
             await this.buscarRetrato(uid, username)
         }
+
+        await this.buscarCategorias()
     },
     computed: {
         ehUsuarioAutenticado() {
@@ -159,10 +178,15 @@ export default {
             this.retrato.preco = preco
             await this.atualizarRetrato(this.retrato)
         },
+        async atualizarCategoria(categoria) {
+            this.retrato.categoria = categoria
+            await this.atualizarRetrato(this.retrato)
+        },
         async atualizarRetrato(retrato) {
-            const {status} = await RetratoApiRequest.atualizarRetrato(retrato)
+            const {data, status} = await RetratoApiRequest.atualizarRetrato(retrato)
         
             if (status === 200) {
+                this.retrato.categoria = data.categoria
                 this.mostrarMensagemRetratoAtualizadoComSucesso()
             }
         },
@@ -184,9 +208,13 @@ export default {
                 this.mostrarMensagemErro("Retrato não encontrado!")
                 await this.closeDialog()
             } else {
+                this.categoria = retrato[0].categoria.id
                 this.$store.commit('setRetratoModalRetrato', retrato[0])
             }
-            
+        },
+        async buscarCategorias() {
+            const {data: categorias} = await CategoriaApiRequest.buscarTodos()
+            this.categorias = categorias
         }
     }
 }

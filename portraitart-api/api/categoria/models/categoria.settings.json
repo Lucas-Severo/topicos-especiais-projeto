@@ -1,0 +1,23 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categorias",
+  "info": {
+    "name": "categoria"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nome": {
+      "type": "uid",
+      "required": true
+    },
+    "retratos": {
+      "via": "categoria",
+      "collection": "retrato"
+    }
+  }
+}

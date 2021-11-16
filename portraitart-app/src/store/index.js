@@ -9,6 +9,7 @@ export default new Vuex.Store({
     userAuth: {
       
     },
+    retratosAgrupadosPorCategoria: {},
     exibirAlerta: false,
     mensagemAlerta: '',
     tipoMensagemAlerta: 'error',
@@ -46,6 +47,11 @@ export default new Vuex.Store({
     },
     setTipoMensagemAlerta(state, tipo) {
       state.tipoMensagemAlerta = tipo
+    },
+
+    // Home
+    setRetratosAgrupadosPorCategoria(state, retratos) {
+      state.retratosAgrupadosPorCategoria = retratos
     },
 
     // Modal Retrato
