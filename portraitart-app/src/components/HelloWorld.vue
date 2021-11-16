@@ -11,12 +11,12 @@
       </v-col>
 
       <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
+        <h1 class="display-1 font-weight-bold mb-3">
           Bem vindo ao Portrait Art
         </h1>
 
         <p class="subheading font-weight-regular">
-          <span>Crie um perfil e compartilhe seus retratos com o pessoal</span>
+          <span>Crie um perfil e compartilhe seus retratos com as pessoas</span>
           <br>Também veja todos os retratos compartilhados
         </p>
       </v-col>

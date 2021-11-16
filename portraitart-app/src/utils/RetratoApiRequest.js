@@ -6,6 +6,10 @@ class RetratoApiRequest {
         return axios.get('/retratos')
     }
 
+    async buscarPorCategoria(categoria, limit) {
+        return axios.get(`/retratos?categoria.nome=${categoria}&_limit=${limit}&_sort=created_at:desc`)
+    }
+
     async buscarRetratosUsuarioPaginado(username, page, limit) {
         const start = (page - 1) * limit
         return axios.get(`/retratos?usuario.username=${username}&_start=${start}&_limit=${limit}&_sort=created_at:desc`)
