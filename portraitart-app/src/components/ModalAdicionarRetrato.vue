@@ -106,7 +106,7 @@ const currencyMask = createNumberMask({
 
 export default {
     name: 'ModalAdicionarRetrato',
-    props: ['value'],
+    props: ['value', 'defaultCategoria'],
     components: {
         ImagePicker
     },
@@ -117,6 +117,7 @@ export default {
             retrato: {
                 titulo: '',
                 preco: '',
+                categoria: this.defaultCategoria,
                 qualidadeMinima: null,
                 qualidadeMaxima: null
             },
@@ -126,6 +127,10 @@ export default {
     },
     watch: {
         'value'(valor) {
+            if (this.defaultCategoria) {
+                this.retrato.categoria = this.defaultCategoria
+            }
+            
             this.dialog = valor
         }
     },
@@ -142,7 +147,7 @@ export default {
             const camposObrigatoriosPreenchidos = await this.$validator.validateAll()
             
             if( primeiraImagem && segundaImagem && camposObrigatoriosPreenchidos) {
-                this.salvarRetrato()    
+                await this.salvarRetrato()    
             }
         },
         atualizarImagemQualidadeMinima(image) {
