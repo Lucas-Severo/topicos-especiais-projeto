@@ -51,7 +51,7 @@ export default {
                 return URL.createObjectURL(imagemFullScreen)
             }
             if (imagemFullScreen) {
-                return ConfigProvider.getBaseUrl() + imagemFullScreen.url
+                return ConfigProvider.getFileProviderUrl() + imagemFullScreen.url
             }
         },
         mostrarImagemFullScreen() {
