@@ -1,7 +1,7 @@
 <template>
     <v-container fill-height >
         <v-row align="center" justify="center">
-            <v-col cols="4">
+            <v-col sm="12" md="4" lg="4">
                 <h2 class="text-center">Realizar Cadastro</h2>
                     <div class="mb-10">
                         <v-text-field

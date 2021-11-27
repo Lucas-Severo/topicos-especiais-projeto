@@ -180,7 +180,6 @@ export default {
         },
         fecharModalAdicionarRetrato() {
             this.dialogAdicionarRetrato = false
-
             this.buscarQuantidadeRetratos()
             this.buscarRetratosUsuario()
         },
