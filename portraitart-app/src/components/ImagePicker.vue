@@ -120,7 +120,7 @@ export default {
             if (this.image instanceof File) {
                 return URL.createObjectURL(this.image)
             }
-            return ConfigProvider.getBaseUrl() + this.image.url
+            return ConfigProvider.getFileProviderUrl() + this.image.url
         }
     },
     mounted() {
