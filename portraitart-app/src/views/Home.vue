@@ -33,17 +33,20 @@
               <p class="text-center grey--text-lighten-5">Nenhum retrato cadastrado nessa categoria :(</p>
             </v-col>
 
-            <image-hover
+            <v-col 
                 v-for="retrato in retratosAgrupados[categoria.nome]"
-                @click="()=>abrirModalInfoImagem(retrato)"
                 :key="retrato.id"
-                :retrato="retrato"
-                :minHeight="150"
-                :minWidth="250"
-                :maxHeight="150"
-                :maxWidth="250"
-                :image="retrato.imagem_baixa_definicao[0]"
-            />
+                md="3"
+                sm="12">
+              <image-hover
+                  @click="()=>abrirModalInfoImagem(retrato)"
+                  :retrato="retrato"
+                  :minHeight="150"
+                  minWidth="100%"
+                  :maxHeight="150"
+                  maxWidth="100%"
+                  :image="retrato.imagem_baixa_definicao[0]"/>
+            </v-col>
           </v-row>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -88,6 +91,7 @@
     },
     methods: {
       async buscarTodosRetratos() {
+        this.$store.commit('setShowLoading', true)
         await RetratoApiRequest.buscarTodosRetratos()
         const {data: categorias} = await CategoriaApiRequest.buscarTodos()
         this.categorias = categorias
@@ -98,6 +102,7 @@
 
         await this.agruparPorCategoria()
         this.$store.commit('setRetratosAgrupadosPorCategoria', this.retratosPorCategoria)
+        this.$store.commit('setShowLoading', false)
       },
       async agruparPorCategoria() {
         for (let categoria of this.categorias) {
@@ -131,9 +136,11 @@
         this.categoriaSelecionada = categoria
       },
       async fecharModalAdicionarRetrato() {
+        this.$store.commit('setShowLoading', true)
         await this.buscarRetratosPorCategoria()
         this.$store.commit('setRetratosAgrupadosPorCategoria', this.retratosPorCategoria)
         this.dialogAdicionarRetrato = false
+        this.$store.commit('setShowLoading', false)
       },
       showImageFullScreen(image) {
         this.$store.commit('setMostrarImagemFullScreen', true)

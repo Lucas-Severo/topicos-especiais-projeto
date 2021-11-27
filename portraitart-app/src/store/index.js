@@ -20,7 +20,8 @@ export default new Vuex.Store({
     fullScreenImage: {
       mostrarImagemFullScreen: false,
       imagemFullScreen: null
-    }
+    },
+    showLoading: false
   },
   mutations: {
     setToken(state, token) {
@@ -68,6 +69,11 @@ export default new Vuex.Store({
     },
     setImagemFullScreen(state, imagem) {
       state.fullScreenImage.imagemFullScreen = imagem
+    },
+
+    // Loading
+    setShowLoading(state, status) {
+      state.showLoading = status
     }
   },
   actions: {

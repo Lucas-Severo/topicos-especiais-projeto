@@ -49,17 +49,21 @@
                 ></v-pagination>
             </div>
             <v-row class="row">
-                <ImageHover
-                    v-for="retrato in retratos"
-                    @click="()=>abrirModalInfoImagem(retrato)"
+                <v-col 
+                    v-for="retrato in retratos" 
                     :key="retrato.id"
-                    :retrato="retrato"
-                    :minHeight="150"
-                    :minWidth="250"
-                    :maxHeight="150"
-                    :maxWidth="250"
-                    :image="retrato.imagem_baixa_definicao[0]"
-                />
+                    md="3"
+                    sm="12">
+                    <ImageHover
+                        @click="()=>abrirModalInfoImagem(retrato)"
+                        :retrato="retrato"
+                        :minHeight="150"
+                        minWidth="100%"
+                        :maxHeight="150"
+                        maxWidth="100%"
+                        :image="retrato.imagem_baixa_definicao[0]"
+                    />
+                </v-col>
             </v-row>
         </div>
 
@@ -105,10 +109,12 @@ export default {
     watch: {
         '$route.params': {
             async handler() {
+                this.$store.commit('setShowLoading', true)
                 this.obterUserName()
                 await this.verificarDadosUsuario()
                 await this.buscarQuantidadeRetratos()
                 await this.buscarRetratosUsuario()
+                this.$store.commit('setShowLoading', false)
             },
             deep: true
         }
@@ -122,10 +128,12 @@ export default {
         }
     },
     async mounted() {
+        this.$store.commit('setShowLoading', true)
         this.obterUserName()
         await this.verificarDadosUsuario()
         await this.buscarQuantidadeRetratos()
         await this.buscarRetratosUsuario()
+        this.$store.commit('setShowLoading', false)
     },
     methods: {
         obterUserName() {
@@ -140,6 +148,7 @@ export default {
             }
         },
         async updateImage(image) {
+            this.$store.commit('setShowLoading', true)
             if (image instanceof File) {
                 const {data} = await ImageApiRequest.uploadImage(image)
                 if (Array.isArray(data) && data.length > 0) {
@@ -150,6 +159,7 @@ export default {
                     this.user = {...response.data}
                 }
             }
+            this.$store.commit('setShowLoading', false)
         },
         async buscarQuantidadeRetratos() {
             const {data: quantidadeTotal} = await RetratoApiRequest.countRetratosPorUsuario(
@@ -158,6 +168,7 @@ export default {
             this.quantidadeTotal = quantidadeTotal
         },
         async buscarRetratosUsuario() {
+            this.$store.commit('setShowLoading', true)
             const {data} = await RetratoApiRequest.buscarRetratosUsuarioPaginado(
                 this.user.username,
                 this.page,
@@ -165,6 +176,7 @@ export default {
             )
             this.retratos = data
             this.totalPages = Math.ceil(this.quantidadeTotal / this.limit)
+            this.$store.commit('setShowLoading', false)
         },
         async abrirModalInfoImagem(retrato) {
             await this.$router.push({
