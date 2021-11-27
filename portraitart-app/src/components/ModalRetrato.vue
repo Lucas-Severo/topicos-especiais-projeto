@@ -184,12 +184,14 @@ export default {
             await this.atualizarRetrato(this.retrato)
         },
         async atualizarRetrato(retrato) {
+            this.$store.commit('setShowLoading', true)
             const {data, status} = await RetratoApiRequest.atualizarRetrato(retrato)
         
             if (status === 200) {
                 this.retrato.categoria = data.categoria
                 this.mostrarMensagemRetratoAtualizadoComSucesso()
             }
+            this.$store.commit('setShowLoading', false)
         },
         mostrarMensagemRetratoAtualizadoComSucesso() {
             this.$store.commit("mostrarAlerta")
@@ -202,8 +204,9 @@ export default {
             this.$store.commit('setTipoMensagemAlerta', 'error')
         },
         async buscarRetrato(uid, username) {
-            this.$store.commit('setModalModalRetrato', true)
+            this.$store.commit('setShowLoading', true)
             const {data: retrato} = await RetratoApiRequest.buscarPorUidEUserName(uid, username)
+            this.$store.commit('setModalModalRetrato', true)
             
             if (retrato.length === 0) {
                 this.mostrarMensagemErro("Retrato não encontrado!")
@@ -212,6 +215,7 @@ export default {
                 this.categoria = retrato[0].categoria.id
                 this.$store.commit('setRetratoModalRetrato', retrato[0])
             }
+            this.$store.commit('setShowLoading', false)
         },
         async buscarCategorias() {
             const {data: categorias} = await CategoriaApiRequest.buscarTodos()

@@ -38,6 +38,8 @@
 
     <v-main>
       <Alerta/>
+      <full-screen-image/>
+      <progress-bar/>
       <router-view/>
     </v-main>
   </v-app>
@@ -48,11 +50,15 @@ import store from './store'
 import AutenticacaoApiRequest from './utils/AutenticacaoApiRequest'
 import UsuarioApiRequest from './utils/UsuarioApiRequest'
 import Alerta from './components/Alerta.vue'
+import FullScreenImage from './components/FullScreenImage.vue'
+import ProgressBar from './components/ProgressBar.vue'
 
 export default {
   name: 'App',
   components: {
-    Alerta
+    Alerta,
+    FullScreenImage,
+    ProgressBar
   },
   computed: {
     ehRotaLogin() {
