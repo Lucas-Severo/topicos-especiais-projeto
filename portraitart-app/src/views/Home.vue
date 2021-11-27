@@ -24,7 +24,6 @@
                 :minWidth="250"
                 :maxHeight="150"
                 :maxWidth="250"
-                :baseUrl="baseURL"
                 :image="retrato.imagem_baixa_definicao[0]"
             />
           </v-row>
@@ -40,7 +39,6 @@
   import CategoriaApiRequest from '../utils/CategoriaApiRequest'
   import store from '../store'
   import ImageHover from '../components/ImageHover.vue'
-  import ConfigProvider from '../utils/ConfigProvider'
 
   export default {
     name: 'Home',
@@ -58,9 +56,6 @@
     computed: {
       retratosAgrupados() {
         return store.state.retratosAgrupadosPorCategoria
-      },
-      baseURL() {
-        return ConfigProvider.getBaseUrl()
       }
     },
     async mounted() {

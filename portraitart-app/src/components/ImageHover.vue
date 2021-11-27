@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import ConfigProvider from '../utils/ConfigProvider'
+
 export default {
     name: 'ImageHover',
     props: ['image', 'baseUrl', 'minHeight', 'maxHeight', 'minWidth', 'maxWidth'],
@@ -35,7 +37,7 @@ export default {
             this.$emit('click', this.retrato)
         },
         obterUrl() {
-            return this.baseUrl+this.image.url
+            return ConfigProvider.getFileProviderUrl()+this.image.url
         }
     }
 }
